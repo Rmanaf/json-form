@@ -1,0 +1,19 @@
+h5 sub {
+  color: blue;
+  font-size: .8rem;
+}
+
+.github-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.opt-list span {
+  color: blue;
+}
+
+.opt-list cite {
+  font-weight: bold;
+}
+/*# sourceMappingURL=style.css.map */

@@ -1,0 +1,8 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "allowJs": true,
+        "outDir": "../dist",
+        "target": "es3"
+    }
+}

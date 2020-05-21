@@ -109,15 +109,15 @@ var JsonForm = /** @class */ (function () {
             _this._nodes.push(element);
         });
     };
-    JsonForm.prototype._merge = function (obj1, obj2) {
-        var obj3 = {};
-        for (var attrname in obj1) {
-            obj3[attrname] = obj1[attrname];
+    JsonForm.prototype._merge = function (o1, o2) {
+        var r = {};
+        for (var a in o1) {
+            r[a] = o1[a];
         }
-        for (var attrname in obj2) {
-            obj3[attrname] = obj2[attrname];
+        for (var a in o2) {
+            r[a] = o2[a];
         }
-        return obj3;
+        return r;
     };
     JsonForm.prototype._createInput = function (n, v, t, p, type) {
         var _this = this;

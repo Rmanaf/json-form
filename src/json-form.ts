@@ -1,5 +1,5 @@
 /**
- * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.0 (https://github.com/Rmanaf/json-form)
+ * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.1 (https://github.com/Rmanaf/json-form)
  * Licensed under MIT (https://github.com/Rmanaf/json-form/blob/master/LICENSE)
  */
 class JsonForm {
@@ -8,8 +8,9 @@ class JsonForm {
     private _d: any;
     private _o: any;
     private _nodes: any[] = [];
+    private static _winProps = Object.getOwnPropertyNames(window);
 
-    constructor(d : any , o : any = {}, t : string = null) {
+    constructor(d: any, o: any = {}, t: string = null) {
 
         let defaults = {
             body: document.body,
@@ -27,13 +28,19 @@ class JsonForm {
             meta: {},
             onchange: {},
             events: {
-                "*" : "keyup keypress blur change",
-                "*-number" : "keyup keypress blur change mouseup"
+                "*": "keyup keypress blur change",
+                "*-number": "keyup keypress blur change mouseup"
             }
         }
 
-        if(typeof d === "string"){
-            d = JSON.parse(d);
+        if (typeof d === "string") {
+
+            let uid = this._uniqueID();
+
+            window[uid] = JSON.parse(d);
+
+            d = window[uid];
+
         }
 
         if (t !== null) {
@@ -57,7 +64,11 @@ class JsonForm {
     }
 
     private _getObjectName(obj) {
+
         for (let o in window) {
+            if (JsonForm._winProps.indexOf(o) > -1) {
+                continue;
+            }
             if (window[o] == obj) {
                 return o;
             }
@@ -145,8 +156,8 @@ class JsonForm {
 
         this._o.body.appendChild(fragment);
 
-        nodes.forEach(element => {   
-            this._nodes.push(element); 
+        nodes.forEach(element => {
+            this._nodes.push(element);
         });
 
     }
@@ -167,7 +178,6 @@ class JsonForm {
         let fromTemplate = false;
 
         let input: any;
-
 
         if (this._o.labels.hasOwnProperty(p)) {
             n = this._o.labels[p];
@@ -199,7 +209,7 @@ class JsonForm {
         }
 
 
-        
+
         if (fromTemplate) {
 
             input = document.getElementById(id);
@@ -222,7 +232,6 @@ class JsonForm {
         input.dataset.type = type;
 
         input.value = v;
-
 
         if (this._o.attributes.hasOwnProperty("*")) {
             Object.keys(this._o.attributes["*"]).forEach(attr => {
@@ -293,19 +302,19 @@ class JsonForm {
         let events = this._o.events;
 
 
-        if(this._o.events.hasOwnProperty(`*`)){
+        if (this._o.events.hasOwnProperty(`*`)) {
             events = this._o.events[`*`];
         }
 
-        if(this._o.events.hasOwnProperty(`*-${t}`)){
+        if (this._o.events.hasOwnProperty(`*-${t}`)) {
             events = this._o.events[`*-${t}`];
         }
 
-        if(this._o.events.hasOwnProperty(p)){
+        if (this._o.events.hasOwnProperty(p)) {
             events = this._o.events[p];
         }
 
-        this._bindEvents(input, events , this._eventHandler.bind(this));
+        this._bindEvents(input, events, this._eventHandler.bind(this));
 
     }
 
@@ -384,7 +393,7 @@ class JsonForm {
     }
 
 
-    private _checkValues(p, d : string, path) {
+    private _checkValues(p, d: string, path) {
 
         let child = d.length > 0 ? p[d] : p;
 
@@ -426,8 +435,12 @@ class JsonForm {
         this._createInput(d, child, inputType, path, type);
     }
 
-    set(o , v){
-        if(!this._o.hasOwnProperty(o)){
+    data(){
+        return this._d;
+    }
+
+    set(o, v) {
+        if (!this._o.hasOwnProperty(o)) {
             console.error(`"${o}" is not defined in the JsonForm options.`);
             return;
         }
@@ -436,7 +449,7 @@ class JsonForm {
 
         let valType = typeof v;
 
-        if(typeof v !== typeof this._o[o]){
+        if (typeof v !== typeof this._o[o]) {
             console.error(`The type of supplied value is wrong! "${o}" : "${type}". Current value is "${valType}".`);
             return;
         }
@@ -444,12 +457,12 @@ class JsonForm {
         this._o[o] = v;
     }
 
-    rebuild(){
+    rebuild() {
 
         let objName = this._getObjectName(this._d);
 
         let path = this._o.model.length > 0 ? `${objName}.${this._o.model}` : objName;
-        
+
         this._nodes.forEach(node => {
             this._o.body.removeChild(node);
         });

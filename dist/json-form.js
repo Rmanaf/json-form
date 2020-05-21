@@ -1,5 +1,5 @@
 /**
- * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.0 (https://github.com/Rmanaf/json-form)
+ * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.1 (https://github.com/Rmanaf/json-form)
  * Licensed under MIT (https://github.com/Rmanaf/json-form/blob/master/LICENSE)
  */
 var JsonForm = /** @class */ (function () {
@@ -28,7 +28,9 @@ var JsonForm = /** @class */ (function () {
             }
         };
         if (typeof d === "string") {
-            d = JSON.parse(d);
+            var uid = this._uniqueID();
+            window[uid] = JSON.parse(d);
+            d = window[uid];
         }
         if (t !== null) {
             this._target = document.getElementById(t);
@@ -45,6 +47,9 @@ var JsonForm = /** @class */ (function () {
     };
     JsonForm.prototype._getObjectName = function (obj) {
         for (var o in window) {
+            if (JsonForm._winProps.indexOf(o) > -1) {
+                continue;
+            }
             if (window[o] == obj) {
                 return o;
             }
@@ -283,6 +288,9 @@ var JsonForm = /** @class */ (function () {
         }
         this._createInput(d, child, inputType, path, type);
     };
+    JsonForm.prototype.data = function () {
+        return this._d;
+    };
     JsonForm.prototype.set = function (o, v) {
         if (!this._o.hasOwnProperty(o)) {
             console.error("\"" + o + "\" is not defined in the JsonForm options.");
@@ -310,5 +318,6 @@ var JsonForm = /** @class */ (function () {
     JsonForm.prototype.addEventListener = function (type, listener, options) {
         this.body().addEventListener(type, listener, options);
     };
+    JsonForm._winProps = Object.getOwnPropertyNames(window);
     return JsonForm;
 }());

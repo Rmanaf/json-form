@@ -1,5 +1,5 @@
 /**
- * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.1 (https://github.com/Rmanaf/json-form)
+ * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.2 (https://github.com/Rmanaf/json-form)
  * Licensed under MIT (https://github.com/Rmanaf/json-form/blob/master/LICENSE)
  */
 class JsonForm {
@@ -88,8 +88,6 @@ class JsonForm {
 
     private _update() {
 
-        this.body().dispatchEvent(new Event('update'));
-
         if (typeof this._target !== "undefined") {
             let jsondata = JSON.stringify(this._d);
 
@@ -99,6 +97,8 @@ class JsonForm {
 
             this._target.value = jsondata
         }
+
+        this.body().dispatchEvent(new Event('update'));
 
     }
 
@@ -233,6 +233,10 @@ class JsonForm {
 
         input.value = v;
 
+        if(t === "checkbox"){
+            input.checked = v;
+        }
+
         if (this._o.attributes.hasOwnProperty("*")) {
             Object.keys(this._o.attributes["*"]).forEach(attr => {
                 input.setAttribute(attr, this._o.attributes["*"][attr]);
@@ -336,19 +340,18 @@ class JsonForm {
             value = 0;
         }
 
-
-        if (this._o.onchange.hasOwnProperty(path)) {
-            this._o.onchange[path](e.target, value, path, type);
-        }
-
-
         try {
             this._updateValue(path, value, type);
         } catch (e) {
             console.error(`Unable to set value "${value}" for "${path}"`);
+            return;
         }
 
         this._update();
+
+        if (this._o.onchange.hasOwnProperty(path)) {
+            this._o.onchange[path](e.target, value, path, type);
+        }
     }
 
     private _updateValue(p, v, t) {

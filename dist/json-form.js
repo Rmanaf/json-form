@@ -1,5 +1,5 @@
 /**
- * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.1 (https://github.com/Rmanaf/json-form)
+ * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.2 (https://github.com/Rmanaf/json-form)
  * Licensed under MIT (https://github.com/Rmanaf/json-form/blob/master/LICENSE)
  */
 var JsonForm = /** @class */ (function () {
@@ -68,7 +68,6 @@ var JsonForm = /** @class */ (function () {
         return args[0];
     };
     JsonForm.prototype._update = function () {
-        this.body().dispatchEvent(new Event('update'));
         if (typeof this._target !== "undefined") {
             var jsondata = JSON.stringify(this._d);
             if (this._o.encodeURI) {
@@ -76,6 +75,7 @@ var JsonForm = /** @class */ (function () {
             }
             this._target.value = jsondata;
         }
+        this.body().dispatchEvent(new Event('update'));
     };
     JsonForm.prototype._bindEvents = function (element, eventNames, listener) {
         var events = eventNames.split(' ');
@@ -156,6 +156,9 @@ var JsonForm = /** @class */ (function () {
         input.dataset.path = p;
         input.dataset.type = type;
         input.value = v;
+        if (t === "checkbox") {
+            input.checked = v;
+        }
         if (this._o.attributes.hasOwnProperty("*")) {
             Object.keys(this._o.attributes["*"]).forEach(function (attr) {
                 input.setAttribute(attr, _this._o.attributes["*"][attr]);
@@ -220,16 +223,17 @@ var JsonForm = /** @class */ (function () {
         if (type === "number" && value === "") {
             value = 0;
         }
-        if (this._o.onchange.hasOwnProperty(path)) {
-            this._o.onchange[path](e.target, value, path, type);
-        }
         try {
             this._updateValue(path, value, type);
         }
         catch (e) {
             console.error("Unable to set value \"" + value + "\" for \"" + path + "\"");
+            return;
         }
         this._update();
+        if (this._o.onchange.hasOwnProperty(path)) {
+            this._o.onchange[path](e.target, value, path, type);
+        }
     };
     JsonForm.prototype._updateValue = function (p, v, t) {
         var arr = p.split('.');

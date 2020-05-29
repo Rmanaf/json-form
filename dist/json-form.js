@@ -1,8 +1,8 @@
 /**
- * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.2 (https://github.com/Rmanaf/json-form)
+ * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.3 (https://github.com/Rmanaf/json-form)
  * Licensed under MIT (https://github.com/Rmanaf/json-form/blob/master/LICENSE)
  */
-var JsonForm = /** @class */ (function () {
+var JsonForm = (function () {
     function JsonForm(d, o, t) {
         if (o === void 0) { o = {}; }
         if (t === void 0) { t = null; }
@@ -37,7 +37,7 @@ var JsonForm = /** @class */ (function () {
         }
         this._d = d;
         this._o = this._extend(defaults, o);
-        this.rebuild();
+        this.update();
     }
     JsonForm.prototype.body = function () {
         return this._o.body;
@@ -45,13 +45,13 @@ var JsonForm = /** @class */ (function () {
     JsonForm.prototype._uniqueID = function () {
         return '_' + Math.random().toString(36).substr(2, 9);
     };
-    JsonForm.prototype._getObjectName = function (obj) {
-        for (var o in window) {
-            if (JsonForm._winProps.indexOf(o) > -1) {
+    JsonForm.prototype._getObjectName = function (o) {
+        for (var p in window) {
+            if (JsonForm._winProps.indexOf(p) > -1) {
                 continue;
             }
-            if (window[o] == obj) {
-                return o;
+            if (window[p] == o) {
+                return p;
             }
         }
         return "undefined";
@@ -67,7 +67,7 @@ var JsonForm = /** @class */ (function () {
                     args[0][key] = args[i][key];
         return args[0];
     };
-    JsonForm.prototype._update = function () {
+    JsonForm.prototype._updateTarget = function () {
         if (typeof this._target !== "undefined") {
             var jsondata = JSON.stringify(this._d);
             if (this._o.encodeURI) {
@@ -77,14 +77,14 @@ var JsonForm = /** @class */ (function () {
         }
         this.body().dispatchEvent(new Event('update'));
     };
-    JsonForm.prototype._bindEvents = function (element, eventNames, listener) {
-        var events = eventNames.split(' ');
+    JsonForm.prototype._bindEvents = function (e, en, l) {
+        var events = typeof en === "string" ? en.split(' ') : en;
         for (var i = 0, iLen = events.length; i < iLen; i++) {
-            element.addEventListener(events[i], listener, false);
+            e.addEventListener(events[i], l, false);
         }
     };
     JsonForm.prototype._createFromTemplate = function (id, p, t, type, l, template) {
-        var _this = this;
+        var _a;
         var temp = document.getElementById(this._o.templates[template]);
         var clone = temp.cloneNode(true);
         var dict = {
@@ -108,11 +108,8 @@ var JsonForm = /** @class */ (function () {
             });
         });
         var fragment = document.importNode(clone.content, true);
-        var nodes = Array.prototype.slice.call(fragment.childNodes);
+        (_a = this._nodes).push.apply(_a, fragment.childNodes);
         this._o.body.appendChild(fragment);
-        nodes.forEach(function (element) {
-            _this._nodes.push(element);
-        });
     };
     JsonForm.prototype._merge = function (o1, o2) {
         var r = {};
@@ -230,7 +227,7 @@ var JsonForm = /** @class */ (function () {
             console.error("Unable to set value \"" + value + "\" for \"" + path + "\"");
             return;
         }
-        this._update();
+        this._updateTarget();
         if (this._o.onchange.hasOwnProperty(path)) {
             this._o.onchange[path](e.target, value, path, type);
         }
@@ -308,16 +305,16 @@ var JsonForm = /** @class */ (function () {
         }
         this._o[o] = v;
     };
-    JsonForm.prototype.rebuild = function () {
+    JsonForm.prototype.update = function () {
         var _this = this;
-        var objName = this._getObjectName(this._d);
-        var path = this._o.model.length > 0 ? objName + "." + this._o.model : objName;
+        var o = this._getObjectName(this._d);
+        var p = this._o.model.length > 0 ? o + "." + this._o.model : o;
         this._nodes.forEach(function (node) {
             _this._o.body.removeChild(node);
         });
         this._nodes = [];
-        this._checkValues(this._d, this._o.model, path);
-        this._update();
+        this._checkValues(this._d, this._o.model, p);
+        this._updateTarget();
     };
     JsonForm.prototype.addEventListener = function (type, listener, options) {
         this.body().addEventListener(type, listener, options);

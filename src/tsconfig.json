@@ -3,6 +3,10 @@
     "compilerOptions": {
         "allowJs": true,
         "outDir": "../dist",
-        "target": "es3"
-    }
+        "target": "ES3",
+        "module": "CommonJS",
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": false
+    },
 }

@@ -1,5 +1,5 @@
 /**
- * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.2 (https://github.com/Rmanaf/json-form)
+ * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.3 (https://github.com/Rmanaf/json-form)
  * Licensed under MIT (https://github.com/Rmanaf/json-form/blob/master/LICENSE)
  */
 class JsonForm {
@@ -51,7 +51,7 @@ class JsonForm {
 
         this._o = this._extend(defaults, o);
 
-        this.rebuild();
+        this.update();
 
     }
 
@@ -59,25 +59,33 @@ class JsonForm {
         return this._o.body;
     }
 
-    private _uniqueID() {
+    /**
+     * Returns an unique ID.
+     */
+    private _uniqueID(): string {
         return '_' + Math.random().toString(36).substr(2, 9);
     }
 
-    private _getObjectName(obj) {
+    /**
+     * Returns the associated name of the supplied object.
+     * @param o The Object
+     */
+    private _getObjectName(o : any) : string {
 
-        for (let o in window) {
-            if (JsonForm._winProps.indexOf(o) > -1) {
+        for (let p in window) {
+            if (JsonForm._winProps.indexOf(p) > -1) {
                 continue;
             }
-            if (window[o] == obj) {
-                return o;
+            if (window[p] == o) {
+                return p;
             }
         }
 
         return "undefined";
     }
+    
 
-    private _extend(...args: any[]) {
+    private _extend(...args: any[]) : any {
         for (var i = 1; i < args.length; i++)
             for (var key in args[i])
                 if (args[i].hasOwnProperty(key))
@@ -86,7 +94,7 @@ class JsonForm {
     }
 
 
-    private _update() {
+    private _updateTarget() : void {
 
         if (typeof this._target !== "undefined") {
             let jsondata = JSON.stringify(this._d);
@@ -103,15 +111,15 @@ class JsonForm {
     }
 
 
-    private _bindEvents(element, eventNames, listener) {
-        var events = eventNames.split(' ');
+    private _bindEvents(e : HTMLElement, en : string | string[], l: (e : any) => {}) : void {
+        var events = typeof en === "string" ? en.split(' ') : en;
         for (var i = 0, iLen = events.length; i < iLen; i++) {
-            element.addEventListener(events[i], listener, false);
+            e.addEventListener(events[i], l, false);
         }
     }
 
 
-    private _createFromTemplate(id, p, t, type, l, template) {
+    private _createFromTemplate(id, p, t, type, l, template) :void {
 
         let temp = <any>document.getElementById(this._o.templates[template]);
 
@@ -152,18 +160,18 @@ class JsonForm {
 
         let fragment = document.importNode(clone.content, true);
 
-        let nodes = Array.prototype.slice.call(fragment.childNodes);
+        this._nodes.push(...fragment.childNodes);
 
         this._o.body.appendChild(fragment);
-
-        nodes.forEach(element => {
-            this._nodes.push(element);
-        });
-
+        
     }
 
-
-    private _merge(o1, o2) {
+    /**
+     * Merges two objects into one.
+     * @param o1 The First Object
+     * @param o2 The Second Object
+     */
+    private _merge(o1 : any, o2 : any)  : any {
         var r = {};
         for (var a in o1) { r[a] = o1[a]; }
         for (var a in o2) { r[a] = o2[a]; }
@@ -347,7 +355,7 @@ class JsonForm {
             return;
         }
 
-        this._update();
+        this._updateTarget();
 
         if (this._o.onchange.hasOwnProperty(path)) {
             this._o.onchange[path](e.target, value, path, type);
@@ -396,7 +404,7 @@ class JsonForm {
     }
 
 
-    private _checkValues(p, d: string, path) {
+    private _checkValues(p : any, d: string, path : string) : void {
 
         let child = d.length > 0 ? p[d] : p;
 
@@ -460,11 +468,11 @@ class JsonForm {
         this._o[o] = v;
     }
 
-    rebuild() {
+    update() {
 
-        let objName = this._getObjectName(this._d);
+        let o = this._getObjectName(this._d);
 
-        let path = this._o.model.length > 0 ? `${objName}.${this._o.model}` : objName;
+        let p = this._o.model.length > 0 ? `${o}.${this._o.model}` : o;
 
         this._nodes.forEach(node => {
             this._o.body.removeChild(node);
@@ -472,9 +480,9 @@ class JsonForm {
 
         this._nodes = [];
 
-        this._checkValues(this._d, this._o.model, path);
+        this._checkValues(this._d, this._o.model, p);
 
-        this._update();
+        this._updateTarget();
 
     }
 

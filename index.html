@@ -209,7 +209,7 @@
     }
  });</code>
     </pre>
-
+    <h6>HTML Code:</h6>
     <pre>
         <code class="html">&lt;template id="myTemplate"&gt;{{label}}&lt;input type="{{inputType}}" id="{{id}}"&gt;&lt;/template&gt;</code>
     </pre>
@@ -229,9 +229,33 @@
     }
  });</code>
     </pre>
+    <h6>HTML Code:</h6>
     <pre>
         <code class="html">&lt;template id="myTemplate"&gt;{{label}}&lt;input type="{{inputType}}" id="{{id}}"&gt;{{info}}&lt;/template&gt;</code>
     </pre>
+
+        <hr>
+
+        <h5>Update Form:</h5>
+
+        <div class="alert alert-info" role="alert">
+            You can regenerate the form by calling the <b>update()</b> method.
+        </div>
+
+        <form class="row">
+
+            <div class="col-12 col-sm-6">
+                <div class="model-editor" data-model-editor data-model="usage5" ></div>
+                <input class="btn btn-primary" type="button" value="Add Item" onclick="addNewEllement()">
+            </div>
+
+            
+            <div class="col-12 col-sm-6">
+                <textarea id="u5placeholder" readonly class="form-control" rows="6"></textarea>
+            </div>
+
+        </form>
+
 
         <!--  bootstrap-templates -->
 
@@ -273,6 +297,7 @@
     </footer>
 
     <script>
+        var newelemnum = 0;
         var editors = [];
         var data = {
             usage1: {
@@ -313,6 +338,13 @@
                 },
                 e: {
                     f: 0
+                }
+            },
+            usage5: {
+                product_0: {
+                    name : "Name",
+                    available : true,
+                    count: 10
                 }
             }
         }
@@ -358,7 +390,23 @@
 
             });
 
+            editors[4].addEventListener("update" , u5update);
+
         });
+
+        function addNewEllement(){
+
+            newelemnum++;
+
+            data.usage5["product_" + newelemnum] = {
+                name : "Name",
+                available : true,
+                count: 10
+            }
+
+            editors[4].update();
+           
+        }
 
         function u1Update(element, value, path, type) {
             var p = document.getElementById("u1placeholder");
@@ -374,7 +422,12 @@
                 'data.usage1.e.n': u1Update
             })
 
-            editors[0].rebuild();
+            editors[0].update();
+        }
+
+        function u5update(){
+            var p = document.getElementById("u5placeholder");
+            p.value = JSON.stringify(data.usage5);
         }
 
     </script>

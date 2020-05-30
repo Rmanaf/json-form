@@ -75,7 +75,7 @@
         <ul class="opt-list">
             <li>body: <span>HTMLElement</span> , <cite>default: document.body</cite></li>
             <li>model: <span>string</span> , <cite>default: " "</cite></li>
-            <li>exclude: <span>string[ ]</span> , <cite>default : [ ]</cite></li>
+            <li>exclude: <span>string[ ]</span> ,  <cite>default : [ ]</cite></li>
             <li>labels: <span>object</span> , <cite>default : { }</cite></li>
             <li>sections: <span>object</span> , <cite>default : { }</cite></li>
             <li>showTypes: <span>boolean</span> , <cite>default : false</cite></li>
@@ -87,8 +87,7 @@
             <li>templates: <span>object</span> , <cite>default : { }</cite></li>
             <li>meta: <span>object</span> , <cite>default : { }</cite></li>
             <li>onchange: <span>object</span> , <cite>default : { }</cite></li>
-            <li>events: <span>object</span> , <cite>default : { "*" : "keyup keypress blur change", "*-number" : "keyup
-                    keypress blur change mouseup" }</cite></li>
+            <li>events: <span>object</span> , <cite>default : { "*" : "keyup keypress blur change", "*-number" : "keyup keypress blur change mouseup" }</cite></li>
         </ul>
 
         <h5>Target <sub>optional</sub></h5>
@@ -210,15 +209,14 @@
     }
  });</code>
     </pre>
-        <h6>HTML Code:</h6>
-        <pre>
+    <h6>HTML Code:</h6>
+    <pre>
         <code class="html">&lt;template id="myTemplate"&gt;{{label}}&lt;input type="{{inputType}}" id="{{id}}"&gt;&lt;/template&gt;</code>
     </pre>
-        <div class="alert alert-info" role="alert">
-            You can use, <b>id</b>, <b>inputType</b>, <b>type</b>, and <b>label</b> in the templates. To add more
-            parameters, You can define them as metadata.
-        </div>
-        <pre>
+    <div class="alert alert-info" role="alert">
+        You can use, <b>id</b>, <b>inputType</b>, <b>type</b>, and <b>label</b> in the templates. To add more parameters, You can define them as metadata.
+    </div>
+    <pre>
 
         <code class="js"> var editor = new JsonForm(data , {
     meta : {
@@ -231,8 +229,8 @@
     }
  });</code>
     </pre>
-        <h6>HTML Code:</h6>
-        <pre>
+    <h6>HTML Code:</h6>
+    <pre>
         <code class="html">&lt;template id="myTemplate"&gt;{{label}}&lt;input type="{{inputType}}" id="{{id}}"&gt;{{info}}&lt;/template&gt;</code>
     </pre>
 
@@ -247,49 +245,16 @@
         <form class="row">
 
             <div class="col-12 col-sm-6">
-                <div class="model-editor" data-model-editor data-model="usage5"></div>
+                <div class="model-editor" data-model-editor data-model="usage5" ></div>
                 <input class="btn btn-primary" type="button" value="Add Item" onclick="addNewEllement()">
             </div>
 
-
+            
             <div class="col-12 col-sm-6">
                 <textarea id="u5placeholder" readonly class="form-control" rows="6"></textarea>
             </div>
 
         </form>
-
-
-        <!--  bootstrap-templates -->
-
-        <template id="selectTemplate">
-            <div class="form-group">
-                <label for="{{id}}">Example select</label>
-                <select value="0" class="form-control" id="{{id}}">
-                    <option value="0">Subscriber</option>
-                    <option value="1">Author</option>
-                    <option value="2">Editor</option>
-                    <option value="3">Contributor</option>
-                </select>
-            </div>
-        </template>
-
-        <template id="inputTemplate">
-            <div class="from-group">
-                <label for="{{id}}">{{label}}</label>
-                <input id="{{id}}" class="form-control">
-                <small class="form-text text-muted">{{description}}</small>
-            </div>
-        </template>
-
-        <template id="checkboxTemplate">
-            <div class="form-check">
-                <input class="form-check-input" id="{{id}}">
-                <label class="form-check-label" for="{{id}}">
-                    {{label}}
-                </label>
-            </div>
-        </template>
-
 
     </main>
 
@@ -315,17 +280,14 @@
                     exclude: [
                         'data.usage3.e'
                     ],
-                    templates: {
-                        '*': "inputTemplate",
-                        '*-checkbox': "checkboxTemplate",
-                        'data.register.role': 'selectTemplate'
-                    },
                     attributes: {
                         'data.usage4.e.f': {
                             "min": 0,
                             "max": 10,
                             "class": 'form-control is-invalid'
-                        }
+                        },
+                        "*" : {"class" : "form-control w-100"},
+                        "*-checkbox" : {"class" : "form-check-input"}
                     },
                     onchange: {
                         'data.usage1.a.b.c': u1Update,
@@ -343,6 +305,12 @@
 
         });
     </script>
+
+    <style>
+        label {
+            width:100%;
+        }
+    </style>
 
 </body>
 

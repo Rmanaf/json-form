@@ -1,5 +1,5 @@
 /**
- * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.4 (https://github.com/Rmanaf/json-form)
+ * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.5 (https://github.com/Rmanaf/json-form)
  * Licensed under MIT (https://github.com/Rmanaf/json-form/blob/master/LICENSE)
  */
 class JsonForm {
@@ -53,23 +53,16 @@ class JsonForm {
 
         this.update();
 
+        setTimeout(() => {
+            this._dispatchEvent("json-form.init");
+        });
+
     }
 
-    private body(): HTMLElement {
-        return this._o.body;
-    }
-
-    /**
-     * Returns an unique ID.
-     */
     private _uniqueID(): string {
         return '_' + Math.random().toString(36).substr(2, 9);
     }
 
-    /**
-     * Returns the associated name of the supplied object.
-     * @param o The Object
-     */
     private _getObjectName(o : any) : string {
 
         for (let p in window) {
@@ -84,7 +77,6 @@ class JsonForm {
         return "undefined";
     }
     
-
     private _extend(...args: any[]) : any {
         for (var i = 1; i < args.length; i++)
             for (var key in args[i])
@@ -93,23 +85,23 @@ class JsonForm {
         return args[0];
     }
 
-
     private _updateTarget() : void {
 
-        if (typeof this._target !== "undefined") {
-            let jsondata = JSON.stringify(this._d);
-
-            if (this._o.encodeURI) {
-                jsondata = encodeURIComponent(jsondata)
-            }
-
-            this._target.value = jsondata
+        if (typeof this._target === "undefined") {
+            return;
         }
 
-        this.body().dispatchEvent(new Event('update'));
+        let jsondata = JSON.stringify(this._d);
+
+        if (this._o.encodeURI) {
+            jsondata = encodeURIComponent(jsondata)
+        }
+
+        this._target.value = jsondata;
+
+        this._dispatchEvent('json-form.update.target');
 
     }
-
 
     private _bindEvents(e : HTMLElement, en : string | string[], l: (e : any) => {}) : void {
         var events = typeof en === "string" ? en.split(' ') : en;
@@ -118,8 +110,7 @@ class JsonForm {
         }
     }
 
-
-    private _createFromTemplate(id, p, t, type, l, template) :void {
+    private _createFromTemplate(id, p, v , t, type, l, template) :void {
 
         let temp = <any>document.getElementById(this._o.templates[template]);
 
@@ -129,7 +120,9 @@ class JsonForm {
             "id": id,
             "inputType": t,
             "type": type,
-            "label": l
+            "label": l,
+            "value" : v,
+            "path" : p
         }
 
         if (this._o.meta.hasOwnProperty('*')) {
@@ -152,8 +145,19 @@ class JsonForm {
 
         Object.keys(dict).forEach(key => {
 
+            const args = this._merge(dict , { parsePath : this._parsePath });
+
             clone.innerHTML = clone.innerHTML.replace(/{{[^{}]+}}/g, function (key) {
-                return dict[key.replace(/[{}]+/g, "")] || "";
+                
+                let result = dict[key.replace(/[{}]+/g, "")] || "";
+
+                if(typeof result === "function")
+                {
+                    result = result( args );
+                }
+
+                return result;
+
             });
 
         });
@@ -166,11 +170,6 @@ class JsonForm {
         
     }
 
-    /**
-     * Merges two objects into one.
-     * @param o1 The First Object
-     * @param o2 The Second Object
-     */
     private _merge(o1 : any, o2 : any)  : any {
         var r = {};
         for (var a in o1) { r[a] = o1[a]; }
@@ -178,14 +177,14 @@ class JsonForm {
         return r;
     }
 
-
     private _createInput(n, v, t, p, type) {
 
         let id = this._uniqueID();
 
-        let fromTemplate = false;
+        let fromTemplate = null;
 
         let input: any;
+
 
         if (this._o.labels.hasOwnProperty(p)) {
             n = this._o.labels[p];
@@ -194,33 +193,36 @@ class JsonForm {
 
         if (this._o.templates.hasOwnProperty(p)) {
 
-            this._createFromTemplate(id, p, t, type, n, p);
+            this._createFromTemplate(id, p, v , t, type, n, p);
 
-            fromTemplate = true;
+            fromTemplate = p;
 
         }
 
         if (this._o.templates.hasOwnProperty(`*-${t}`) && !fromTemplate) {
 
-            this._createFromTemplate(id, p, t, type, n, `*-${t}`);
+            this._createFromTemplate(id, p, v , t, type, n, `*-${t}`);
 
-            fromTemplate = true;
+            fromTemplate = `*-${t}`;
 
         }
 
         if (this._o.templates.hasOwnProperty(`*`) && !fromTemplate) {
 
-            this._createFromTemplate(id, p, t, type, n, "*");
+            this._createFromTemplate(id, p, v , t, type, n, "*");
 
-            fromTemplate = true;
+            fromTemplate = "*";
 
         }
 
-
-
-        if (fromTemplate) {
+        if (fromTemplate != null) {
 
             input = document.getElementById(id);
+
+            if(typeof input === "undefined"){
+                console.error(`No input defined for <${fromTemplate}>`);
+                return;
+            }
 
         } else {
 
@@ -262,8 +264,6 @@ class JsonForm {
                 input.setAttribute(attr, this._o.attributes[p][attr]);
             });
         }
-
-
 
         if (this._o.allRequired) {
             input.required = true;
@@ -353,7 +353,7 @@ class JsonForm {
         try {
             this._updateValue(path, value, type);
         } catch (e) {
-            console.error(`Unable to set value "${value}" for "${path}"`);
+            console.error(`Unable to set value "${value}" for "${path}".\n${e.message}`);
             return;
         }
 
@@ -364,7 +364,7 @@ class JsonForm {
         }
     }
 
-    private _updateValue(p, v, t) {
+    private _parsePath(p){
 
         const arr: string[] = p.split('.');
 
@@ -374,11 +374,33 @@ class JsonForm {
 
         let param = arr.pop();
 
-        let a = arr.reduce((a, b) => {
+        let obj = arr.reduce((a, b) => {
             return a[b]
         }, window);
 
-        a[param] = this._castToType(t, v);
+        return {
+            object : obj,
+            parameter : param,
+            get : () => {
+                return typeof param === "undefined" ?  obj : obj[param];
+            },
+            set : (value) => {
+                if(typeof param === "undefined"){
+                    return;
+                }
+                obj[param] = value;
+            }
+        }
+
+    }
+
+    private _updateValue(p, v, t) {
+
+        let data = this._parsePath(p);
+
+        data.object[data.parameter] = this._castToType(t, v);
+
+        this._dispatchEvent('json-form.update.value');
 
     }
 
@@ -405,10 +427,11 @@ class JsonForm {
 
     }
 
+    private _checkValues(d: string, path : string) : void {
 
-    private _checkValues(p : any, d: string, path : string) : void {
+        let pathInfo = this._parsePath(path);
 
-        let child = d.length > 0 ? p[d] : p;
+        let child = pathInfo.get();
 
         let type = typeof child;
 
@@ -425,10 +448,17 @@ class JsonForm {
                     this._createSection(path);
                 }
 
-                Object.keys(child).forEach((e) => {
-                    let newPath = `${path}.${e}`;
-                    this._checkValues(child, e, newPath);
-                });
+                if(Array.isArray(child)){
+                    child.forEach((e) => {
+                        let newPath = `${path}.${e}`;
+                        this._checkValues(e, newPath);
+                    });
+                }else{
+                    Object.keys(child).forEach((e) => {
+                        let newPath = `${path}.${e}`;
+                        this._checkValues(e, newPath);
+                    });
+                }
 
                 return;
 
@@ -445,7 +475,24 @@ class JsonForm {
             inputType = this._o.types[path];
         }
 
-        this._createInput(d, child, inputType, path, type);
+        this._createInput(d, child, inputType, path, type );
+
+    }
+
+    private _clearForm(){
+
+        this._nodes.forEach(node => {
+            this._o.body.removeChild(node);
+        });
+
+        this._nodes = [];
+
+        this._dispatchEvent('json-form.clear');
+
+    }
+
+    private _dispatchEvent(type: string){
+        this._o.body.dispatchEvent(new Event(type));
     }
 
     data(){
@@ -472,24 +519,22 @@ class JsonForm {
 
     update() {
 
-        let o = this._getObjectName(this._d);
+        let objName = this._getObjectName(this._d);
 
-        let p = this._o.model.length > 0 ? `${o}.${this._o.model}` : o;
+        let path = this._o.model.length > 0 ? `${objName}.${this._o.model}` : objName;
 
-        this._nodes.forEach(node => {
-            this._o.body.removeChild(node);
-        });
+        this._clearForm();
 
-        this._nodes = [];
-
-        this._checkValues(this._d, this._o.model, p);
+        this._checkValues(this._o.model, path);
 
         this._updateTarget();
+
+        this._dispatchEvent('json-form.update');
 
     }
 
     addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
-        this.body().addEventListener(type, listener, options);
+        this._o.body.addEventListener(type, listener, options);
     }
 
 }

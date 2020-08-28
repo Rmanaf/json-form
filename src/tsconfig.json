@@ -5,8 +5,8 @@
         "outDir": "../dist",
         "target": "ES3",
         "module": "CommonJS",
-        "removeComments": true,
+        "removeComments": false,
         "preserveConstEnums": true,
-        "sourceMap": false
-    },
+        "sourceMap": true
+    }
 }

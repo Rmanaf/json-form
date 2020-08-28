@@ -1,9 +1,10 @@
 /**
- * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.4 (https://github.com/Rmanaf/json-form)
+ * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.5 (https://github.com/Rmanaf/json-form)
  * Licensed under MIT (https://github.com/Rmanaf/json-form/blob/master/LICENSE)
  */
-var JsonForm = (function () {
+var JsonForm = /** @class */ (function () {
     function JsonForm(d, o, t) {
+        var _this = this;
         if (o === void 0) { o = {}; }
         if (t === void 0) { t = null; }
         this._nodes = [];
@@ -38,10 +39,10 @@ var JsonForm = (function () {
         this._d = d;
         this._o = this._extend(defaults, o);
         this.update();
+        setTimeout(function () {
+            _this._dispatchEvent("json-form.init");
+        });
     }
-    JsonForm.prototype.body = function () {
-        return this._o.body;
-    };
     JsonForm.prototype._uniqueID = function () {
         return '_' + Math.random().toString(36).substr(2, 9);
     };
@@ -68,14 +69,15 @@ var JsonForm = (function () {
         return args[0];
     };
     JsonForm.prototype._updateTarget = function () {
-        if (typeof this._target !== "undefined") {
-            var jsondata = JSON.stringify(this._d);
-            if (this._o.encodeURI) {
-                jsondata = encodeURIComponent(jsondata);
-            }
-            this._target.value = jsondata;
+        if (typeof this._target === "undefined") {
+            return;
         }
-        this.body().dispatchEvent(new Event('update'));
+        var jsondata = JSON.stringify(this._d);
+        if (this._o.encodeURI) {
+            jsondata = encodeURIComponent(jsondata);
+        }
+        this._target.value = jsondata;
+        this._dispatchEvent('json-form.update.target');
     };
     JsonForm.prototype._bindEvents = function (e, en, l) {
         var events = typeof en === "string" ? en.split(' ') : en;
@@ -83,15 +85,18 @@ var JsonForm = (function () {
             e.addEventListener(events[i], l, false);
         }
     };
-    JsonForm.prototype._createFromTemplate = function (id, p, t, type, l, template) {
+    JsonForm.prototype._createFromTemplate = function (id, p, v, t, type, l, template) {
         var _a;
+        var _this = this;
         var temp = document.getElementById(this._o.templates[template]);
         var clone = temp.cloneNode(true);
         var dict = {
             "id": id,
             "inputType": t,
             "type": type,
-            "label": l
+            "label": l,
+            "value": v,
+            "path": p
         };
         if (this._o.meta.hasOwnProperty('*')) {
             dict = this._merge(dict, this._o.meta["*"]);
@@ -103,8 +108,13 @@ var JsonForm = (function () {
             dict = this._merge(dict, this._o.meta[p]);
         }
         Object.keys(dict).forEach(function (key) {
+            var args = _this._merge(dict, { parsePath: _this._parsePath });
             clone.innerHTML = clone.innerHTML.replace(/{{[^{}]+}}/g, function (key) {
-                return dict[key.replace(/[{}]+/g, "")] || "";
+                var result = dict[key.replace(/[{}]+/g, "")] || "";
+                if (typeof result === "function") {
+                    result = result(args);
+                }
+                return result;
             });
         });
         var fragment = document.importNode(clone.content, true);
@@ -124,25 +134,29 @@ var JsonForm = (function () {
     JsonForm.prototype._createInput = function (n, v, t, p, type) {
         var _this = this;
         var id = this._uniqueID();
-        var fromTemplate = false;
+        var fromTemplate = null;
         var input;
         if (this._o.labels.hasOwnProperty(p)) {
             n = this._o.labels[p];
         }
         if (this._o.templates.hasOwnProperty(p)) {
-            this._createFromTemplate(id, p, t, type, n, p);
-            fromTemplate = true;
+            this._createFromTemplate(id, p, v, t, type, n, p);
+            fromTemplate = p;
         }
         if (this._o.templates.hasOwnProperty("*-" + t) && !fromTemplate) {
-            this._createFromTemplate(id, p, t, type, n, "*-" + t);
-            fromTemplate = true;
+            this._createFromTemplate(id, p, v, t, type, n, "*-" + t);
+            fromTemplate = "*-" + t;
         }
         if (this._o.templates.hasOwnProperty("*") && !fromTemplate) {
-            this._createFromTemplate(id, p, t, type, n, "*");
-            fromTemplate = true;
+            this._createFromTemplate(id, p, v, t, type, n, "*");
+            fromTemplate = "*";
         }
-        if (fromTemplate) {
+        if (fromTemplate != null) {
             input = document.getElementById(id);
+            if (typeof input === "undefined") {
+                console.error("No input defined for <" + fromTemplate + ">");
+                return;
+            }
         }
         else {
             input = document.createElement("input");
@@ -225,7 +239,7 @@ var JsonForm = (function () {
             this._updateValue(path, value, type);
         }
         catch (e) {
-            console.error("Unable to set value \"" + value + "\" for \"" + path + "\"");
+            console.error("Unable to set value \"" + value + "\" for \"" + path + "\".\n" + e.message);
             return;
         }
         this._updateTarget();
@@ -233,16 +247,33 @@ var JsonForm = (function () {
             this._o.onchange[path](e.target, value, path, type);
         }
     };
-    JsonForm.prototype._updateValue = function (p, v, t) {
+    JsonForm.prototype._parsePath = function (p) {
         var arr = p.split('.');
         if (arr[0] === 'window') {
             arr.shift();
         }
         var param = arr.pop();
-        var a = arr.reduce(function (a, b) {
+        var obj = arr.reduce(function (a, b) {
             return a[b];
         }, window);
-        a[param] = this._castToType(t, v);
+        return {
+            object: obj,
+            parameter: param,
+            get: function () {
+                return typeof param === "undefined" ? obj : obj[param];
+            },
+            set: function (value) {
+                if (typeof param === "undefined") {
+                    return;
+                }
+                obj[param] = value;
+            }
+        };
+    };
+    JsonForm.prototype._updateValue = function (p, v, t) {
+        var data = this._parsePath(p);
+        data.object[data.parameter] = this._castToType(t, v);
+        this._dispatchEvent('json-form.update.value');
     };
     JsonForm.prototype._castToType = function (type, input) {
         switch (type) {
@@ -260,9 +291,10 @@ var JsonForm = (function () {
         this._o.body.appendChild(header);
         this._o.body.appendChild(document.createElement('hr'));
     };
-    JsonForm.prototype._checkValues = function (p, d, path) {
+    JsonForm.prototype._checkValues = function (d, path) {
         var _this = this;
-        var child = d.length > 0 ? p[d] : p;
+        var pathInfo = this._parsePath(path);
+        var child = pathInfo.get();
         var type = typeof child;
         var inputType = "text";
         if (this._o.exclude.indexOf(path) >= 0) {
@@ -273,10 +305,18 @@ var JsonForm = (function () {
                 if (this._o.sections.hasOwnProperty(path)) {
                     this._createSection(path);
                 }
-                Object.keys(child).forEach(function (e) {
-                    var newPath = path + "." + e;
-                    _this._checkValues(child, e, newPath);
-                });
+                if (Array.isArray(child)) {
+                    child.forEach(function (e) {
+                        var newPath = path + "." + e;
+                        _this._checkValues(e, newPath);
+                    });
+                }
+                else {
+                    Object.keys(child).forEach(function (e) {
+                        var newPath = path + "." + e;
+                        _this._checkValues(e, newPath);
+                    });
+                }
                 return;
             case "boolean":
                 inputType = "checkbox";
@@ -289,6 +329,17 @@ var JsonForm = (function () {
             inputType = this._o.types[path];
         }
         this._createInput(d, child, inputType, path, type);
+    };
+    JsonForm.prototype._clearForm = function () {
+        var _this = this;
+        this._nodes.forEach(function (node) {
+            _this._o.body.removeChild(node);
+        });
+        this._nodes = [];
+        this._dispatchEvent('json-form.clear');
+    };
+    JsonForm.prototype._dispatchEvent = function (type) {
+        this._o.body.dispatchEvent(new Event(type));
     };
     JsonForm.prototype.data = function () {
         return this._d;
@@ -307,19 +358,17 @@ var JsonForm = (function () {
         this._o[o] = v;
     };
     JsonForm.prototype.update = function () {
-        var _this = this;
-        var o = this._getObjectName(this._d);
-        var p = this._o.model.length > 0 ? o + "." + this._o.model : o;
-        this._nodes.forEach(function (node) {
-            _this._o.body.removeChild(node);
-        });
-        this._nodes = [];
-        this._checkValues(this._d, this._o.model, p);
+        var objName = this._getObjectName(this._d);
+        var path = this._o.model.length > 0 ? objName + "." + this._o.model : objName;
+        this._clearForm();
+        this._checkValues(this._o.model, path);
         this._updateTarget();
+        this._dispatchEvent('json-form.update');
     };
     JsonForm.prototype.addEventListener = function (type, listener, options) {
-        this.body().addEventListener(type, listener, options);
+        this._o.body.addEventListener(type, listener, options);
     };
     JsonForm._winProps = Object.getOwnPropertyNames(window);
     return JsonForm;
 }());
+//# sourceMappingURL=json-form.js.map

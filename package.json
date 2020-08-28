@@ -1,0 +1,25 @@
+{
+  "name": "@rmanaf/json-form",
+  "version": "0.9.5",
+  "description": "A lightweight JavaScript library for generating forms from JSON/Object.",
+  "main": "./dist/json-form.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rmanaf/json-form.git"
+  },
+  "keywords": [
+    "json-form",
+    "javascript",
+    "generator",
+    "json"
+  ],
+  "author": "Rmanaf <me@rmanaf.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Rmanaf/json-form/issues"
+  },
+  "homepage": "https://github.com/Rmanaf/json-form#readme"
+}

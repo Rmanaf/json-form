@@ -67,7 +67,7 @@
         </pre>
 
         <h5>Data:</h5>
-        <p>The <b>"data"</b> must be a JSON string or an object.</p>
+        <p>JSON string or object</p>
 
         <h5>Options <sub>optional</sub></h5>
         <p>The following parameters are supported:</p>
@@ -92,11 +92,11 @@
         </ul>
 
         <h5>Target <sub>optional</sub></h5>
-        <p>The ID of an HTML element (input or textarea).</p>
+        <p>HTML element ID</p>
 
         <hr>
 
-        <h5>Simple Form:</h5>
+        <h5>Create Form:</h5>
 
         <pre>
             <code class="js"> var data = {
@@ -214,16 +214,24 @@
         <pre>
         <code class="html">&lt;template id="myTemplate"&gt;{{label}}&lt;input type="{{inputType}}" id="{{id}}"&gt;&lt;/template&gt;</code>
     </pre>
-        <div class="alert alert-info" role="alert">
-            You can use, <b>id</b>, <b>inputType</b>, <b>type</b>, and <b>label</b> in the templates. To add more
-            parameters, You can define them as metadata.
-        </div>
+        The following parameters are supported:
+        <ul>
+            <li><b>id</b></li> 
+            <li><b>inputType</b></li>
+            <li><b>type</b></li>
+            <li><b>label</b></li>
+            <li><b>value</b></li>
+        </ul>
+        
+        <div class="alert alert-info" role="alert">You can define more parameters in meta section.</div>
+        
         <pre>
 
         <code class="js"> var editor = new JsonForm(data , {
     meta : {
         '*' : {
-            "info" : "custom value"
+            "info" : "custom value",
+            "fn" : (args) => { return args.value.toUpperCase(); }
         }
     },
     templates : {
@@ -233,16 +241,13 @@
     </pre>
         <h6>HTML Code:</h6>
         <pre>
-        <code class="html">&lt;template id="myTemplate"&gt;{{label}}&lt;input type="{{inputType}}" id="{{id}}"&gt;{{info}}&lt;/template&gt;</code>
+        <code class="html">&lt;template id="myTemplate"&gt;{{label}}&lt;input type="{{inputType}}" id="{{id}}"&gt;{{info}}: {{fn}}&lt;/template&gt;</code>
     </pre>
 
         <hr>
 
         <h5>Update Form:</h5>
-
-        <div class="alert alert-info" role="alert">
-            You can regenerate the form by calling the <b>update()</b> method.
-        </div>
+        You can update the form by using the <b>update()</b> method.
 
         <form class="row">
 
@@ -260,18 +265,6 @@
 
 
         <!--  bootstrap-templates -->
-
-        <template id="selectTemplate">
-            <div class="form-group">
-                <label for="{{id}}">Example select</label>
-                <select value="0" class="form-control" id="{{id}}">
-                    <option value="0">Subscriber</option>
-                    <option value="1">Author</option>
-                    <option value="2">Editor</option>
-                    <option value="3">Contributor</option>
-                </select>
-            </div>
-        </template>
 
         <template id="inputTemplate">
             <div class="from-group">
@@ -293,56 +286,9 @@
 
     </main>
 
-    <footer role="contentinfo" class="container mb-5">
-
-
-    </footer>
+    <footer role="contentinfo" class="container mb-5"></footer>
 
     <script src="./assets/script.js"></script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function (event) {
-
-            [...document.querySelectorAll("[data-model-editor]")].forEach((e, i) => {
-
-                var options = {
-                    body: e,
-                    model: e.dataset.model,
-                    labels: {
-                        'data.usage2.a.b.c': "Custom Label 1",
-                        'data.usage2.e.f': "Custom Label 2",
-                    },
-                    exclude: [
-                        'data.usage3.e'
-                    ],
-                    templates: {
-                        '*': "inputTemplate",
-                        '*-checkbox': "checkboxTemplate",
-                        'data.register.role': 'selectTemplate'
-                    },
-                    attributes: {
-                        'data.usage4.e.f': {
-                            "min": 0,
-                            "max": 10,
-                            "class": 'form-control is-invalid'
-                        }
-                    },
-                    onchange: {
-                        'data.usage1.a.b.c': u1Update,
-                        'data.usage1.e.f': u1Update
-                    }
-                }
-
-                var placeholder = e.dataset.placeholder;
-
-                editors.push(new JsonForm(data, options, placeholder));
-
-            });
-
-            editors[4].addEventListener("update", u5update);
-
-        });
-    </script>
 
 </body>
 

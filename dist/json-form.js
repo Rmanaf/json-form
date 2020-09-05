@@ -1,5 +1,5 @@
 /**
- * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.5 (https://github.com/Rmanaf/json-form)
+ * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.6 (https://github.com/Rmanaf/json-form)
  * Licensed under MIT (https://github.com/Rmanaf/json-form/blob/master/LICENSE)
  */
 var JsonForm = /** @class */ (function () {
@@ -136,8 +136,18 @@ var JsonForm = /** @class */ (function () {
         var id = this._uniqueID();
         var fromTemplate = null;
         var input;
+        var label;
+        if (this._o.labels.hasOwnProperty("*")) {
+            label = this._o.labels['*'];
+        }
         if (this._o.labels.hasOwnProperty(p)) {
-            n = this._o.labels[p];
+            var label_1 = this._o.labels[p];
+        }
+        if (typeof label === "function") {
+            n = label(n, p);
+        }
+        else if (typeof label !== "undefined") {
+            n = label;
         }
         if (this._o.templates.hasOwnProperty(p)) {
             this._createFromTemplate(id, p, v, t, type, n, p);
@@ -192,25 +202,25 @@ var JsonForm = /** @class */ (function () {
             input.required = false;
         }
         if (!fromTemplate) {
-            var label = document.createElement("label");
-            label.setAttribute("for", id);
+            var label_2 = document.createElement("label");
+            label_2.setAttribute("for", id);
             if (t === "checkbox") {
                 var span = document.createElement("span");
                 span.innerHTML = n;
-                label.appendChild(input);
-                label.appendChild(span);
+                label_2.appendChild(input);
+                label_2.appendChild(span);
             }
             else {
-                label.innerHTML = n;
-                label.appendChild(input);
+                label_2.innerHTML = n;
+                label_2.appendChild(input);
             }
             if (this._o.showTypes && !fromTemplate) {
                 var cite = document.createElement('cite');
                 cite.innerHTML = type;
-                label.appendChild(cite);
+                label_2.appendChild(cite);
             }
-            this._o.body.appendChild(label);
-            this._nodes.push(label);
+            this._o.body.appendChild(label_2);
+            this._nodes.push(label_2);
         }
         var events = this._o.events;
         if (this._o.events.hasOwnProperty("*")) {

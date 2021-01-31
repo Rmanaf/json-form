@@ -1,5 +1,5 @@
 /**
- * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.6 (https://github.com/Rmanaf/json-form)
+ * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.7 (https://github.com/Rmanaf/json-form)
  * Licensed under MIT (https://github.com/Rmanaf/json-form/blob/master/LICENSE)
  */
 var JsonForm = /** @class */ (function () {
@@ -141,7 +141,7 @@ var JsonForm = /** @class */ (function () {
             label = this._o.labels['*'];
         }
         if (this._o.labels.hasOwnProperty(p)) {
-            var label_1 = this._o.labels[p];
+            label = this._o.labels[p];
         }
         if (typeof label === "function") {
             n = label(n, p);
@@ -202,25 +202,25 @@ var JsonForm = /** @class */ (function () {
             input.required = false;
         }
         if (!fromTemplate) {
-            var label_2 = document.createElement("label");
-            label_2.setAttribute("for", id);
+            var label_1 = document.createElement("label");
+            label_1.setAttribute("for", id);
             if (t === "checkbox") {
                 var span = document.createElement("span");
                 span.innerHTML = n;
-                label_2.appendChild(input);
-                label_2.appendChild(span);
+                label_1.appendChild(input);
+                label_1.appendChild(span);
             }
             else {
-                label_2.innerHTML = n;
-                label_2.appendChild(input);
+                label_1.innerHTML = n;
+                label_1.appendChild(input);
             }
             if (this._o.showTypes && !fromTemplate) {
                 var cite = document.createElement('cite');
                 cite.innerHTML = type;
-                label_2.appendChild(cite);
+                label_1.appendChild(cite);
             }
-            this._o.body.appendChild(label_2);
-            this._nodes.push(label_2);
+            this._o.body.appendChild(label_1);
+            this._nodes.push(label_1);
         }
         var events = this._o.events;
         if (this._o.events.hasOwnProperty("*")) {

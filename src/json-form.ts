@@ -1,5 +1,5 @@
 /**
- * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.6 (https://github.com/Rmanaf/json-form)
+ * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.7 (https://github.com/Rmanaf/json-form)
  * Licensed under MIT (https://github.com/Rmanaf/json-form/blob/master/LICENSE)
  */
 class JsonForm {
@@ -192,7 +192,7 @@ class JsonForm {
         }
 
         if (this._o.labels.hasOwnProperty(p)) {
-            let label = this._o.labels[p];
+            label = this._o.labels[p];
         }
 
         if (typeof label === "function") {

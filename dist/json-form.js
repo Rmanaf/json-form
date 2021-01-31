@@ -1,5 +1,5 @@
 /**
- * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.7 (https://github.com/Rmanaf/json-form)
+ * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.8 (https://github.com/Rmanaf/json-form)
  * Licensed under MIT (https://github.com/Rmanaf/json-form/blob/master/LICENSE)
  */
 var JsonForm = /** @class */ (function () {
@@ -164,7 +164,7 @@ var JsonForm = /** @class */ (function () {
         if (fromTemplate != null) {
             input = document.getElementById(id);
             if (typeof input === "undefined") {
-                console.error("No input defined for <" + fromTemplate + ">");
+                console.error("Missing element in <" + fromTemplate + ">");
                 return;
             }
         }
@@ -356,13 +356,13 @@ var JsonForm = /** @class */ (function () {
     };
     JsonForm.prototype.set = function (o, v) {
         if (!this._o.hasOwnProperty(o)) {
-            console.error("\"" + o + "\" is not defined in the JsonForm options.");
+            console.error("\"" + o + "\" is not supported.");
             return;
         }
         var type = typeof this._o[o];
         var valType = typeof v;
         if (typeof v !== typeof this._o[o]) {
-            console.error("The type of supplied value is wrong! \"" + o + "\" : \"" + type + "\". Current value is \"" + valType + "\".");
+            console.error("Type mismatch for \"" + o + "\" : \"" + type + "\". Current value is \"" + valType + "\".");
             return;
         }
         this._o[o] = v;

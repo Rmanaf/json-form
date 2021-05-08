@@ -47,6 +47,10 @@ var data = {
             available: true,
             count: 10
         }
+    },
+    login : {
+        name: "",
+        pass: ""
     }
 }
 
@@ -80,6 +84,12 @@ function u5update() {
     p.value = value;
 }
 
+function u6update(){
+    var p = document.getElementById("u6placeholder");
+    var value = JSON.stringify(data.login, null, "\t");
+    p.value = value;
+}
+
 
 document.addEventListener("DOMContentLoaded", function (event) {
 
@@ -91,6 +101,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
             labels: {
                 'data.usage2.a.b.c': "Custom Label 1",
                 'data.usage2.e.f': "Custom Label 2",
+                "data.login.name" : "Username:",
+                "data.login.pass" : "Password:"
             },
             exclude: [
                 'data.usage3.e'
@@ -105,11 +117,37 @@ document.addEventListener("DOMContentLoaded", function (event) {
                     "min": 0,
                     "max": 10,
                     "class": 'form-control is-invalid'
+                },
+                "data.login.name" : {
+                    "type" : "text",
+                    "minlength" : 4
+                },
+                "data.login.pass" : {
+                    "type" : "password",
+                    "minlength" : 8
                 }
             },
             onchange: {
                 'data.usage1.a.b.c': u1Update,
-                'data.usage1.e.f': u1Update
+                'data.usage1.e.f': u1Update,
+                "data.login.name" : function(target, value, path, type){
+                    const regex = /^[A-Za-zñÑáéíóúÁÉÍÓÚ][a-zA-ZñÑáéíóúÁÉÍÓÚ0-9_]+$/;
+                    const valid = value.match(regex);
+                    if(valid == null){
+                        target.classList.add("is-invalid");
+                    }else{
+                        target.classList.remove("is-invalid");
+                    }
+               },
+               "data.login.pass" : function(target, value, path, type){
+                    const regex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[_$@$!%*?&]).+$/;
+                    const valid = value.match(regex);
+                    if(valid == null){
+                        target.classList.add("is-invalid");
+                    }else{
+                        target.classList.remove("is-invalid");
+                    }
+                }
             }
         }
 
@@ -126,5 +164,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
     editors[4].addEventListener("json-form.update", u5update);
 
     editors[4].addEventListener("json-form.update.value", u5update);
+
+    editors[5].addEventListener("json-form.init", u6update);
+
+    editors[5].addEventListener("json-form.update", u6update);
+
+    editors[5].addEventListener("json-form.update.value", u6update);
 
 });

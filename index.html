@@ -254,8 +254,22 @@
         <hr>
 
         <h5>Update Form:</h5>
-        You can update the form by using the <b>update()</b> method.
+        You can update forms by using the <b>update()</b> method.
+        <pre><code class="js">var num = 0;
+function addNewEllement() {
 
+    num++;
+
+    data.model["product_" + num] = {
+        name: "Name",
+        available: true,
+        count: 10
+    }
+
+    editor.update();
+
+}
+        </code></pre>
         <form class="row">
 
             <div class="col-12 col-sm-6">
@@ -270,6 +284,71 @@
 
         </form>
 
+        <hr>
+        <h5>Form Validation</h5>
+        A simple login form:
+        <pre><code>var data = {
+    "login" : {
+        "name" : "",
+        "pass" : ""
+    }
+}
+const editor = new JsonForm(data , {
+    "model" : "login"
+    "labels" : {
+        "data.login.name" : "Username:",
+        "data.login.pass" : "Password:"
+    },
+    "attributes" : {
+        "data.login.name" : {
+            "type" : "text",
+            "minlength" : 4
+        },
+        "data.login.pass" : {
+            "type" : "password",
+            "minlength" : 8
+        }
+    },
+    "onchange" : {
+        "data.login.name" : function(target, value, path, type){ 
+
+            // Username validator
+
+            const regex = /^[A-Za-zñÑáéíóúÁÉÍÓÚ][a-zA-ZñÑáéíóúÁÉÍÓÚ0-9_]+$/;
+            const valid = value.match(regex);
+
+            if(valid == null){
+                target.classList.add("is-invalid");
+            }else{
+                target.classList.remove("is-invalid");
+            }
+       },
+       "data.login.pass" : function(target, value, path, type){ 
+
+           // Password validator
+
+            const regex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[_$@$!%*?&]).+$/;
+            const valid = value.match(regex);
+
+            if(valid == null){
+                target.classList.add("is-invalid");
+            }else{
+                target.classList.remove("is-invalid");
+            }
+        }
+   } 
+});</code></pre>
+<form class="row">
+
+    <div class="col-12 col-sm-6">
+        <div class="model-editor" data-model-editor data-model="login" ></div>
+    </div>
+
+    <div class="col-12 col-sm-6">
+        <textarea id="u6placeholder" readonly class="form-control" rows="6"></textarea>
+    </div>
+
+</form>
 
         <!--  bootstrap-templates -->
 
@@ -293,7 +372,9 @@
 
     </main>
 
-    <footer role="contentinfo" class="container mb-5"></footer>
+    <footer role="contentinfo" class="container mt-5 p-4 bg-light">
+       <p> by <a href="https://rmanaf.com">@Rmanaf</a> </p>
+    </footer>
 
     <script src="./assets/script.js"></script>
 

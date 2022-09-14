@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="../assets/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <script src="../../dist/json-form.js"></script>
+
+    <title>JsonForm - Demo</title>
+
+</head>
+
+<body class="container-xxl py-3">
+    <h5>JavaScript:</h5>
+    <script src="https://gist.github.com/Rmanaf/96e98777eed0d8da7297d32b9eacb0a9.js"></script>
+    <h5>HTML:</h5>
+    <script src="https://gist.github.com/Rmanaf/b2e7ee788711bd7336f1b50d5520a057.js"></script>
+    <h5>Result:</h5>
+    <form class="row">
+
+        <div class="col-12 col-sm-6">
+            <div id="formBody"></div>
+        </div>
+
+        <div class="col-12 col-sm-6">
+            <textarea id="formOutput" readonly class="form-control" rows="10"></textarea>
+        </div>
+
+    </form>
+
+    <template id="inputTemplate">
+        <div class="from-group">
+            <label for="{{id}}">{{label}}</label>
+            <input id="{{id}}" class="form-control">
+            <small class="form-text text-muted">{{hint}}</small>
+        </div>
+    </template>
+
+    <script>
+
+        var data = { login: { username: "", password: "" } }
+
+        const editor = new JsonForm(data, {
+            body: document.getElementById("formBody"),
+            labels: {
+                "data.login.username": "Username: ",
+                "data.login.password": "Password: "
+            },
+            templates: {
+                "*": "inputTemplate"
+            },
+            attributes: {
+                "data.login.username": {
+                    autocomplete: "username"
+                },
+                "data.login.password": {
+                    type: "password",
+                    autocomplete: "current-password"
+                }
+            },
+            meta: {
+                "data.login": {
+                    hint: (args) => {
+                        switch (args.path) {
+                            case "data.login.username":
+                                return "At least 5 characters, including [a-z] and [0-9].";
+                            case "data.login.password":
+                                return "At least 9 characters, including [a-z, A-Z], [0-9] and special characters.";
+                        }
+                    }
+                }
+            }
+        }, document.getElementById("formOutput"));
+
+        editor.addEventListener("json-form.change", function (e) {
+
+            const path = e.detail.path;
+            const target = e.detail.target;
+            const value = e.detail.value;
+
+            let regex = "";
+
+            switch (path) {
+                case "data.login.username":
+                    regex = /^[A-Za-zñÑáéíóúÁÉÍÓÚ][a-zA-ZñÑáéíóúÁÉÍÓÚ0-9_]{4,}$/;
+                    break;
+
+                case "data.login.password":
+                    regex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[_$@$!%*?&]).{8,}$/;
+                    break;
+            }
+
+            const valid = value.match(regex);
+
+            if (valid == null) {
+                target.classList.add("is-invalid");
+                target.classList.remove("is-valid");
+            } else {
+                target.classList.add("is-valid");
+                target.classList.remove("is-invalid");
+            }
+
+        });
+
+        // prettify output
+        editor.updateTarget = function (value) {
+            return JSON.stringify(editor.data(), null, "\t")
+        }
+
+        editor.update();
+
+    </script>
+
+</body>
+
+</html>

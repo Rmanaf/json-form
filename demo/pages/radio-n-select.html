@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="../assets/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <script src="../../dist/json-form.js"></script>
+
+    <title>JsonForm - Demo</title>
+
+</head>
+
+<body class="container-xxl py-3">
+    <h5>JavaScript:</h5>
+    <script src="https://gist.github.com/Rmanaf/a1f5a3f638c2a25fa6d7729e783b4e52.js"></script>
+    <h5>HTML:</h5>
+    <script src="https://gist.github.com/Rmanaf/8a0339adaaa15e617f66972b10592e04.js"></script>
+    <h5>Result:</h5>
+
+    <form class="row my-1">
+        <div class="col-12">
+            <div id="radioFormBody"></div>
+        </div>
+    </form>
+
+    <form class="row my-1">
+        <div class="col-12 ">
+            <div id="selectFormBody"></div>
+        </div>
+
+    </form>
+
+    <div class="row my-1">
+        <div class="col-12">
+            <textarea class="form-control" readonly id="formOutput" rows="2"></textarea>
+        </div>
+    </div>
+
+    <template id="radioTemplate">
+        <section id="{{id}}">
+            <p>Radio Group:</p>
+            <label>
+                <input {{fn|male|hi}} data-jf-path="{{path}}" name="{{id}}" type="radio" value="male" />
+                Male
+            </label>
+            <label>
+                <input {{fn|female}} data-jf-path="{{path}}" name="{{id}}" type="radio" value="female" />
+                Female
+            </label>
+            <label>
+                <input {{fn|other}} data-jf-path="{{path}}" name="{{id}}" type="radio" value="other" />
+                Other
+            </label>
+        </section>
+    </template>
+
+    <template id="selectTemplate">
+        <p class="my-3">Select:</p>
+        <select name="{{id}}" id="{{id}}" class="form-select my-1">
+            <option value="male" {{fn|male}}>
+                Male
+            </option>
+            <option value="female" {{fn|female}}>
+                Female
+            </option>
+            <option value="other" {{fn|other}}>
+                Other
+            </option>
+        </select>
+    </template>
+
+    <script>
+
+        var data = {
+            radio: {
+                gender: "female"
+            },
+            select: {
+                gender: "other"
+            }
+        }
+
+        const options = {
+            templates: {
+                'data.radio': 'radioTemplate',
+                'data.select': 'selectTemplate'
+            },
+            types: {
+                'data.radio': 'radio',
+                'data.select': 'select',
+            },
+            meta: {
+                '*': {
+                    'fn': (args) => {
+                        if (args.value == args.userData[0]) {
+                            if (args.inputType === "radio") {
+                                return "checked";
+                            }
+                            if (args.inputType === "select") {
+                                return "selected";
+                            }
+                        }
+                        return "";
+                    }
+                }
+            }
+        }
+
+        const output = document.getElementById("formOutput");
+
+        const editor_1 = new JsonForm(data, JsonForm.merge({
+            body: document.getElementById("radioFormBody"),
+            model: "radio",
+        }, options), output);
+
+        const editor_2 = new JsonForm(data, JsonForm.merge({
+            body: document.getElementById("selectFormBody"),
+            model: "select",
+        }, options), output);
+
+    </script>
+
+</body>
+
+</html>

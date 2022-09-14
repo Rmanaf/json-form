@@ -1,0 +1,134 @@
+header {
+  background-color: #e5e5f7;
+  opacity: 0.7;
+  background-image:  linear-gradient(30deg, #b9b9b9 12%, transparent 12.5%, transparent 87%, #b9b9b9 87.5%, #b9b9b9), linear-gradient(150deg, #b9b9b9 12%, transparent 12.5%, transparent 87%, #b9b9b9 87.5%, #b9b9b9), linear-gradient(30deg, #b9b9b9 12%, transparent 12.5%, transparent 87%, #b9b9b9 87.5%, #b9b9b9), linear-gradient(150deg, #b9b9b9 12%, transparent 12.5%, transparent 87%, #b9b9b9 87.5%, #b9b9b9), linear-gradient(60deg, #b9b9b977 25%, transparent 25.5%, transparent 75%, #b9b9b977 75%, #b9b9b977), linear-gradient(60deg, #b9b9b977 25%, transparent 25.5%, transparent 75%, #b9b9b977 75%, #b9b9b977);
+  background-size: 80px 140px;
+  background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
+}
+
+h5 sub {
+  color: blue;
+  font-size: .8rem;
+}
+
+.vh-50 {
+  height: 50vh;
+  max-height: 450px;
+}
+
+.github-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.opt-list li > span {
+  color: blue;
+}
+
+.opt-list cite {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.opt-list li > b:first-child {
+  font-size: 18px;
+}
+
+.description {
+  max-width: 700px;
+  width: 100%;
+  text-align: justify;
+}
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  font-family: "Operator Mono", "Fira Code", "Menlo", "Monaco", "Courier New", "monospace";
+  line-height: 1.45;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: #2d2b57;
+  font-weight: normal;
+  border-radius: 0.25rem;
+}
+
+.hljs-title {
+  color: #fad000;
+  font-weight: normal;
+}
+
+.hljs-name {
+  color: #a1feff;
+}
+
+.hljs-tag {
+  color: #ffffff;
+}
+
+.hljs-attr {
+  color: #f8d000;
+  font-style: italic;
+}
+
+.hljs-built_in,
+.hljs-selector-tag,
+.hljs-section {
+  color: #fb9e00;
+}
+
+.hljs-keyword {
+  color: #fb9e00;
+}
+
+.hljs,
+.hljs-subst {
+  color: #e3dfff;
+}
+
+.hljs-string,
+.hljs-attribute,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition,
+.hljs-code,
+.hljs-regexp,
+.hljs-selector-class,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-template-tag,
+.hljs-quote,
+.hljs-deletion {
+  color: #4cd213;
+}
+
+.hljs-meta,
+.hljs-meta-string {
+  color: #fb9e00;
+}
+
+.hljs-comment {
+  color: #ac65ff;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-name,
+.hljs-strong {
+  font-weight: normal;
+}
+
+.hljs-literal,
+.hljs-number {
+  color: #fa658d;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+/*# sourceMappingURL=style.css.map */

@@ -1,72 +1,106 @@
 /**
- * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.8 (https://github.com/Rmanaf/json-form)
+ * JsonForm | A lightweight JavaScript library for generating forms from JSON/Object. v0.9.9 (https://github.com/Rmanaf/json-form)
  * Licensed under MIT (https://github.com/Rmanaf/json-form/blob/master/LICENSE)
  */
+enum JsonFormLogLevel {
+    Errors, Events, All, None
+}
+
 class JsonForm {
 
+    private static EVENT_NS = 'json-form';
+
+    // Window default properties
+    private static WIN_PROPS = Object.getOwnPropertyNames(window);
+
+    static LOG_LEVEL: JsonFormLogLevel = JsonFormLogLevel.None;
+
     private _target: any;
+
     private _d: any;
+
+    private _raw: any;
+
     private _o: any;
+
     private _nodes: any[] = [];
-    private static _winProps = Object.getOwnPropertyNames(window);
 
-    constructor(d: any, o: any = {}, t: string = null) {
+    private _sections: any[] = [];
 
-        let defaults = {
+    /**
+     * Constructor
+     * @param {any} data The JSON data to be used for generating the form.
+     * @param {any} options The Generating options.
+     * @param { string|HTMLElement } target The target element to show the JSON data in (for debugging purposes).
+     * @returns {JsonForm} The JsonForm instance.
+     */
+    constructor(data: any, options: any = {}, target: string|HTMLElement = null) {
+
+        let defaults: any = {
             body: document.body,
             model: "",
             exclude: [],
             labels: {},
             sections: {},
-            showTypes: false,
-            allRequired: false,
-            optionals: [],
             types: {},
             attributes: {},
-            encodeURI: false,
             templates: {},
             meta: {},
-            onchange: {},
             events: {
                 "*": "keyup keypress blur change",
                 "*-number": "keyup keypress blur change mouseup"
             }
         }
 
-        if (typeof d === "string") {
+        if (typeof data === "string") {
 
             let uid = this._uniqueID();
 
-            window[uid] = JSON.parse(d);
+            window[uid] = JSON.parse(data);
 
-            d = window[uid];
+            data = window[uid];
 
         }
 
-        if (t !== null) {
-            this._target = <any>document.getElementById(t);
+        if (target !== null) {
+            if (typeof target === "string") {
+                this._target = <any>document.getElementById(target);
+            } else if (target instanceof HTMLElement) {
+                this._target = target;
+            } else if (this._mayLog(JsonFormLogLevel.Errors)) {
+                this._log('Error', `Type of target is wrong!`);
+            }
         }
 
-        this._d = d;
+        this._d = data;
 
-        this._o = this._extend(defaults, o);
+        this._raw = data;
+
+        this._o = this._extend(defaults, options);
 
         this.update();
 
         setTimeout(() => {
-            this._dispatchEvent("json-form.init");
+            this._dispatchEvent("init");
         });
 
     }
 
+
+    /**
+     * Generates an unique ID.
+     * @returns {string} The unique ID.
+     */
     private _uniqueID(): string {
-        return '_' + Math.random().toString(36).substr(2, 9);
+        return '_' + Math.random().toString(36).substring(2, 9);
     }
+
+
 
     private _getObjectName(o: any): string {
 
         for (let p in window) {
-            if (JsonForm._winProps.indexOf(p) > -1) {
+            if (JsonForm.WIN_PROPS.indexOf(p) > -1) {
                 continue;
             }
             if (window[p] == o) {
@@ -77,6 +111,12 @@ class JsonForm {
         return "undefined";
     }
 
+
+    /**
+     * Extends an object with another object.
+     * @param args The object to be extended.
+     * @returns {object} The extended object.
+     */
     private _extend(...args: any[]): any {
         for (var i = 1; i < args.length; i++)
             for (var key in args[i])
@@ -85,35 +125,66 @@ class JsonForm {
         return args[0];
     }
 
+
+
+    /**
+    * Merges two objects.
+    * @param o1 The first object.
+    * @param o2 The second object.
+    * @returns {object} The merged object.
+    */
+    protected static merge(o1: any, o2: any): any {
+        var r = {};
+        for (var a in o1) { r[a] = o1[a]; }
+        for (var a in o2) { r[a] = o2[a]; }
+        return r;
+    }
+
     private _updateTarget(): void {
 
         if (typeof this._target === "undefined") {
             return;
         }
 
-        let jsondata = JSON.stringify(this._d);
-
-        if (this._o.encodeURI) {
-            jsondata = encodeURIComponent(jsondata)
-        }
+        const jsondata = this.updateTarget(JSON.stringify(this._d));
 
         this._target.value = jsondata;
 
-        this._dispatchEvent('json-form.update.target');
+        this._dispatchEvent('update.target' , { target: this._target , data: jsondata });
 
     }
 
-    private _bindEvents(e: HTMLElement, en: string | string[], l: (e: any) => {}): void {
-        var events = typeof en === "string" ? en.split(' ') : en;
+
+    public updateTarget( value: string ): string {
+        return value;
+    }
+
+
+    /**
+     * Shortcut for binding an event to an element.
+     * @param e The element to bind the event to.
+     * @param en The event name.
+     * @param l The listener.
+     * @param options The event options.
+     */
+    private _bindEvents(e: HTMLElement, en: string | string[], l: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
+
+        const events = typeof en === "string" ? en.split(' ') : en;
+
         for (var i = 0, iLen = events.length; i < iLen; i++) {
-            e.addEventListener(events[i], l, false);
+            e.addEventListener(events[i], l, options);
         }
+
     }
 
-    private _createFromTemplate(id, p, v, t, type, l, template): void {
+    private _createFromTemplate(id, path: string, v, t, type, l, template): void {
 
-        let temp = <any>document.getElementById(this._o.templates[template]);
+        const templateVal = this._o.templates[template];
 
+        const doc = this._o.body.ownerDocument;
+
+        const temp = <any>doc.getElementById(templateVal);
+        
         let clone = temp.cloneNode(true);
 
         var dict: object = {
@@ -122,116 +193,86 @@ class JsonForm {
             "type": type,
             "label": l,
             "value": v,
-            "path": p
+            "path": path
         }
 
-        if (this._o.meta.hasOwnProperty('*')) {
+        const meta = this._pathIncludes(path, Object.keys(this._o.meta), t);
 
-            dict = this._merge(dict, this._o.meta["*"]);
-
-        }
-
-        if (this._o.meta.hasOwnProperty(`*-${t}`)) {
-
-            dict = this._merge(dict, this._o.meta[`*-${t}`]);
-
-        }
-
-        if (this._o.meta.hasOwnProperty(p)) {
-
-            dict = this._merge(dict, this._o.meta[p]);
-
+        if (meta) {
+            dict = JsonForm.merge(dict, this._o.meta[meta.match]);
         }
 
         Object.keys(dict).forEach(key => {
 
-            const args = this._merge(dict, { parsePath: this._parsePath });
+            const args = JsonForm.merge(dict, { parsePath: this._parsePath });
 
             clone.innerHTML = clone.innerHTML.replace(/{{[^{}]+}}/g, function (key) {
 
-                let result = dict[key.replace(/[{}]+/g, "")] || "";
+                const keySeq = key.replace(/[{}]+/g, "").split("|");
+
+                let result = dict[keySeq[0]] || "";
 
                 if (typeof result === "function") {
-                    result = result(args);
+                    const userData = keySeq.length ? keySeq.slice(1, keySeq.length) : [];
+                    result = result(JsonForm.merge(args, { userData: userData }));
                 }
 
                 return result;
 
-            });
-
+            }.bind(this));
+            
         });
+
 
         let fragment = document.importNode(clone.content, true);
 
+        
+
         this._nodes.push(...fragment.childNodes);
 
-        this._o.body.appendChild(fragment);
+        this._appendInput(fragment, path);
 
     }
 
-    private _merge(o1: any, o2: any): any {
-        var r = {};
-        for (var a in o1) { r[a] = o1[a]; }
-        for (var a in o2) { r[a] = o2[a]; }
-        return r;
-    }
 
-    private _createInput(n, v, t, p, type) {
+
+
+    private _createInput(n, v, t, path: string, type) {
 
         let id = this._uniqueID();
-
-        let fromTemplate = null;
 
         let input: any;
 
         let label: any;
 
-
         if (this._o.labels.hasOwnProperty(`*`)) {
             label = this._o.labels['*'];
         }
 
-        if (this._o.labels.hasOwnProperty(p)) {
-            label = this._o.labels[p];
+        if (this._o.labels.hasOwnProperty(path)) {
+            label = this._o.labels[path];
         }
 
         if (typeof label === "function") {
-            n = label(n, p);
+            n = label(n, path);
         } else if (typeof label !== "undefined") {
             n = label;
         }
 
+        const template = this._pathIncludes(path, Object.keys(this._o.templates), t);
 
-        if (this._o.templates.hasOwnProperty(p)) {
+        if (template) {
 
-            this._createFromTemplate(id, p, v, t, type, n, p);
-
-            fromTemplate = p;
-
-        }
-
-        if (this._o.templates.hasOwnProperty(`*-${t}`) && !fromTemplate) {
-
-            this._createFromTemplate(id, p, v, t, type, n, `*-${t}`);
-
-            fromTemplate = `*-${t}`;
-
-        }
-
-        if (this._o.templates.hasOwnProperty(`*`) && !fromTemplate) {
-
-            this._createFromTemplate(id, p, v, t, type, n, "*");
-
-            fromTemplate = "*";
-
-        }
-
-        if (fromTemplate != null) {
+            this._createFromTemplate(id, path, v, t, type, n, template.match);
 
             input = document.getElementById(id);
 
             if (typeof input === "undefined") {
-                console.error(`Missing element in <${fromTemplate}>`);
+
+                if (this._mayLog(JsonFormLogLevel.Errors)) {
+                    this._log('Error', `Missing element in <${template.match}>`);
+                }
+
                 return;
             }
 
@@ -243,48 +284,33 @@ class JsonForm {
 
         }
 
-
         input.setAttribute("name", id);
 
-        input.setAttribute("type", t);
+        if(input instanceof HTMLInputElement){
+            input.setAttribute("type", t);
+        }else{
+            input.dataset.jfInputType = t;
+        }
 
-        input.dataset.path = p;
+        input.dataset.jfPath = path;
 
-        input.dataset.type = type;
+        input.dataset.jfType = type;
 
         input.value = v;
 
-        if (t === "checkbox") {
+        if (t === "checkbox" && type === "boolean") {
             input.checked = v;
         }
 
-        if (this._o.attributes.hasOwnProperty("*")) {
-            Object.keys(this._o.attributes["*"]).forEach(attr => {
-                input.setAttribute(attr, this._o.attributes["*"][attr]);
+        let attribute = this._pathIncludes(path, Object.keys(this._o.attributes), t);
+
+        if (attribute) {
+            Object.keys(this._o.attributes[attribute.match]).forEach(attr => {
+                input.setAttribute(attr, this._o.attributes[attribute.match][attr]);
             });
         }
 
-        if (this._o.attributes.hasOwnProperty(`*-${t}`)) {
-            Object.keys(this._o.attributes[`*-${t}`]).forEach(attr => {
-                input.setAttribute(attr, this._o.attributes[`*-${t}`][attr]);
-            });
-        }
-
-        if (this._o.attributes.hasOwnProperty(p)) {
-            Object.keys(this._o.attributes[p]).forEach(attr => {
-                input.setAttribute(attr, this._o.attributes[p][attr]);
-            });
-        }
-
-        if (this._o.allRequired) {
-            input.required = true;
-        }
-
-        if (this._o.optionals.indexOf(p) >= 0) {
-            input.required = false;
-        }
-
-        if (!fromTemplate) {
+        if (!template) {
 
             let label = document.createElement("label");
 
@@ -304,54 +330,210 @@ class JsonForm {
                 label.innerHTML = n;
                 label.appendChild(input);
 
-
             }
 
-
-            if (this._o.showTypes && !fromTemplate) {
-
-                let cite = document.createElement('cite');
-
-                cite.innerHTML = type;
-
-                label.appendChild(cite);
-
-            }
-
-            this._o.body.appendChild(label);
-
-            this._nodes.push(label);
+            this._nodes.push(this._appendInput(label, path));
 
         }
 
         let events = this._o.events;
 
+        let event = this._pathIncludes(path, Object.keys(this._o.events), t);
 
-        if (this._o.events.hasOwnProperty(`*`)) {
-            events = this._o.events[`*`];
-        }
-
-        if (this._o.events.hasOwnProperty(`*-${t}`)) {
-            events = this._o.events[`*-${t}`];
-        }
-
-        if (this._o.events.hasOwnProperty(p)) {
-            events = this._o.events[p];
+        if (event) {
+            events = this._o.events[event.match];
         }
 
         this._bindEvents(input, events, this._eventHandler.bind(this));
 
     }
 
+
+    /**
+     * Append input to the form
+     * @param {any} element DOM element
+     * @returns {HTMLElement} The element
+     */
+    private _appendInput(element: HTMLElement, path: string, type: string = 'input'): HTMLElement {
+
+        let parent = path.split(".").slice(0, -1).join(".");
+
+        // Check for section
+        let skey = Object.keys(this._o.sections).filter(s => {
+            let res = this._pathIncludes(path, this._o.sections[s].children, type);
+            return res !== false;
+        });
+
+        let isInArray = this._testArray(parent) !== false;
+
+        if (skey.length) {
+
+            let theKey = skey[0];
+
+            // Get section object from options
+            let section = this._o.sections[theKey];
+
+            if (this._sections.hasOwnProperty(parent) && isInArray) {
+                theKey = parent;
+            }
+
+            // Check if section is already in the form
+            if (this._sections.hasOwnProperty(theKey)) {
+
+                section = this._sections[theKey];
+
+            } else {
+
+                // Otherwise create a new section
+                let newSection = this._createElementFromHTML(section.template || "section");
+
+                if (section.repeat !== true) {
+
+                    // Store section in the sections object for later use
+                    newSection.setAttribute("data-section", theKey);
+                    this._sections[theKey] = newSection;
+
+                } else if (section.merge === true && isInArray) {
+
+                    newSection.setAttribute("data-section", parent);
+                    this._sections[parent] = newSection;
+
+                }
+
+                this._o.body.appendChild(newSection);
+
+                section = newSection;
+
+                this._nodes.push(newSection);
+
+            }
+
+            // Append to section
+            section.appendChild(element);
+
+            return element;
+
+        }
+
+        // Otherwise append to body
+        this._o.body.appendChild(element);
+
+        return element;
+
+    }
+
+
+    /**
+     *  Check if the path is in the paths array
+     * @param {string} path The path to check
+     * @param {string[]} paths The paths array
+     * @param {string} type The type of input that associated with the path
+     * @param {boolean} checkAncestors If true, the path must be an exact match
+     * @returns {any}
+     */
+    private _pathIncludes(path: string, paths: string[], type: string = 'input', checkAncestors: boolean = true): any {
+
+        // Return false if the paths array is empty
+        if (paths.length === 0) {
+            return false;
+        }
+
+        // Check if path is in paths
+        if (paths.indexOf(path) >= 0) {
+            return {
+                path: path,
+                match: path,
+                mode: "exact"
+            };
+        }
+
+        // Check for regex match
+        if (paths.some(x => /\/\S+\//.test(x))) {
+
+            for (let p in paths) {
+
+                if (/\/\S+\//.test(paths[p])) {
+
+                    let regex = JsonForm.stringToRegex(paths[p]);
+
+                    if (regex.test(path)) {
+
+                        return {
+                            path: path,
+                            match: paths[p],
+                            mode: "regex"
+                        }
+                    }
+                }
+
+            }
+        }
+
+
+        if (paths.some(x => x === `*-${type}`)) {
+
+            return {
+                path: path,
+                match: `*-${type}`,
+                mode: "type"
+            }
+
+        }
+
+        // Check for wildcard in paths
+        if (paths.some(x => x === "*" || x === '*.*')) {
+            return {
+                path: path,
+                match: '*',
+                mode: "wildcard"
+            }
+        }
+
+        // Check if any of the parents are in paths
+        if (checkAncestors) {
+
+            var pathClone = path;
+
+            while (pathClone.length) {
+
+                let p = pathClone.split(".").slice(0, -1).join(".");
+                //[a-zA-Z]+[\[0-9\]]*?\.*?[a-zA-Z]+[\[0-9\]]*?\.*?[a-zA-Z]+[\[0-9\]]*?
+                if (paths.indexOf(p) >= 0) {
+                    return {
+                        path: path,
+                        match: p,
+                        mode: "ancestor"
+                    }
+                }
+
+                pathClone = p;
+
+            }
+
+        }
+
+        return false;
+
+    }
+
+
+    protected static stringToRegex(s: string, m: RegExpMatchArray = null) {
+        return (m = s.match(/^([\/~@;%#'])(.*?)\1([gimsuy]*)$/)) ? new RegExp(m[2], m[3].split('').filter((i, p, s) => s.indexOf(i) === p).join('')) : new RegExp(s);
+    }
+
+
+    /**
+     * Event handler for all inputs
+     * @param {any} e The event
+     * @returns {void}
+     */
     private _eventHandler(e) {
 
-        let value: any = e.target.value;
+        const t = e.target.getAttribute("type"); // type of property
+        const type = e.target.dataset.jfType; // type of input
+        const path = e.target.dataset.jfPath; // path of property
 
-
-        let t = e.target.getAttribute("type");
-        let type = e.target.dataset.type;
-        let path = e.target.dataset.path;
-
+        let value: any = e.target.value; // value of input
 
         if (t === "checkbox") {
             value = e.target.checked;
@@ -362,22 +544,30 @@ class JsonForm {
         }
 
         try {
-            this._updateValue(path, value, type);
-        } catch (e) {
-            console.error(`Unable to set value "${value}" for "${path}".\n${e.message}`);
+            this._updateData(path, value, type);
+        } catch (error) {
+            if (this._mayLog(JsonFormLogLevel.Errors)) {
+                this._log('Error', `Unable to set value "${value}" for "${path}".\n${error.message}`);
+            }
             return;
         }
 
         this._updateTarget();
 
-        if (this._o.onchange.hasOwnProperty(path)) {
-            this._o.onchange[path](e.target, value, path, type);
-        }
+        this._dispatchEvent("change", {
+            path: path,
+            value: value,
+            type: type,
+            target: e.target
+        });
+
     }
 
     private _parsePath(p) {
 
         const arr: string[] = p.split('.');
+
+        let obj = {};
 
         if (arr[0] === 'window') {
             arr.shift();
@@ -385,9 +575,23 @@ class JsonForm {
 
         let param = arr.pop();
 
-        let obj = arr.reduce((a, b) => {
-            return a[b]
+        let ta = this._testArray(param);
+
+        // check for array
+        if (ta) {
+            arr.push(ta.value);
+            param = ta.matches[1];
+        }
+
+        obj = arr.reduce((a, b) => {
+            let ta = this._testArray(b);
+            if (ta) {
+                return a[ta.value][ta.matches[1]];
+            }
+            return a[b];
         }, window);
+
+
 
         return {
             object: obj,
@@ -405,14 +609,41 @@ class JsonForm {
 
     }
 
-    private _updateValue(p, v, t) {
+    /**
+     * Returns true if the path is an array
+     * @param {string} text The path to check 
+     * @returns {boolean|any} False if not an array, otherwise the details of the array
+     */
+    private _testArray(text: string): boolean | any {
+
+        const arrayRegex = /\[([^)]+)\]/;
+
+        if (arrayRegex.test(text)) {
+            return {
+                matches: arrayRegex.exec(text),
+                value: text.replace(arrayRegex, '')
+            }
+        }
+
+        return false;
+
+    }
+
+
+    private _updateData(p, v, t) {
+
+        const args = { path: p, value: this._castToType(t, v) , type: t }
 
         let data = this._parsePath(p);
 
-        data.object[data.parameter] = this._castToType(t, v);
+        data.object[data.parameter] = this.updateData( args ).value;
 
-        this._dispatchEvent('json-form.update.value');
+        this._dispatchEvent('update.data' , args);
 
+    }
+
+    public updateData(args: any): any {
+        return args;
     }
 
     private _castToType(type, input) {
@@ -426,49 +657,37 @@ class JsonForm {
         }
     }
 
-    private _createSection(path) {
-
-        let header = document.createElement("h2");
-
-        header.innerHTML = this._o.sections[path];
-
-        this._o.body.appendChild(header);
-
-        this._o.body.appendChild(document.createElement('hr'));
-
-    }
-
     private _checkValues(d: string, path: string): void {
 
         let pathInfo = this._parsePath(path);
 
         let child = pathInfo.get();
 
+
         let type = typeof child;
 
         let inputType = "text";
 
-        if (this._o.exclude.indexOf(path) >= 0) {
-            return;
-        }
+
 
         switch (type) {
+
             case "object":
 
-                if (this._o.sections.hasOwnProperty(path)) {
-                    this._createSection(path);
-                }
-
                 if (Array.isArray(child)) {
-                    child.forEach((e) => {
-                        let newPath = `${path}.${e}`;
-                        this._checkValues(e, newPath);
+
+                    child.forEach((v, i, a) => {
+                        let newPath = `${path}[${i}]`;
+                        this._checkValues(v, newPath);
                     });
+
                 } else {
+
                     Object.keys(child).forEach((e) => {
                         let newPath = `${path}.${e}`;
                         this._checkValues(e, newPath);
                     });
+
                 }
 
                 return;
@@ -482,38 +701,115 @@ class JsonForm {
                 break;
         }
 
-        if (this._o.types.hasOwnProperty(path)) {
-            inputType = this._o.types[path];
+        const types = this._pathIncludes(path, Object.keys(this._o.types), inputType);
+
+        if (types) {
+            inputType = this._o.types[types.match];
+        }
+
+        const exclude = this._pathIncludes(path, this._o.exclude, inputType);
+
+        if (exclude) {
+            return;
         }
 
         this._createInput(d, child, inputType, path, type);
 
     }
 
-    private _clearForm() {
+    private _clearForm(dispatch: boolean = false) {
 
-        this._nodes.forEach(node => {
-            this._o.body.removeChild(node);
+        this._nodes.forEach((node: HTMLElement) => {
+            if(node.parentNode !== null) {
+                node.parentNode.removeChild(node);
+            }
         });
 
         this._nodes = [];
 
-        this._dispatchEvent('json-form.clear');
+        this._sections = [];
+
+        if (dispatch) {
+            this._dispatchEvent('clear');
+        }
 
     }
 
-    private _dispatchEvent(type: string) {
-        this._o.body.dispatchEvent(new Event(type));
+
+    /**
+     * Check if passed log level satisfies the minimum log level
+     * @param {JsonFormLogLevel} level The log level to check
+     */
+    private _mayLog(level: JsonFormLogLevel): boolean {
+        return JsonForm.LOG_LEVEL !== JsonFormLogLevel.None && (JsonForm.LOG_LEVEL === level || JsonForm.LOG_LEVEL == JsonFormLogLevel.All);
     }
 
-    data() {
+
+    /**
+     * Logs a message to the console
+     * @param {string[]} args The arguments to pass to the console
+     */
+    private _log(...args: string[]): void {
+        const now = (new Date()).toISOString().slice(11, -1);
+        console.log(now, ...args);
+    }
+
+
+    /**
+     * Shortcut for triggering an event.
+     * @param {string} type The type of event
+     * @param {any} detail The detail of the event
+     * @returns {void}
+     */
+    private _dispatchEvent(type: string, detail: any = null): void {
+
+        const evt = `${JsonForm.EVENT_NS}.${type}`;
+
+        this._o.body.dispatchEvent(detail ? new CustomEvent(evt, { detail: detail }) : new Event(evt));
+
+        if (this._mayLog(JsonFormLogLevel.Events)) {
+            this._log("Event", evt, JSON.stringify(detail) || "");
+        }
+
+    }
+
+
+    /**
+     * It destroys the form
+     */
+    protected destroy(): void {
+
+        // Reset data to default
+        this.resetAll();
+
+        // Remove all of the generated nodes
+        this._clearForm();
+
+        // Dispatch the 'distroy' event
+        this._dispatchEvent('distroy');
+
+    }
+
+
+    /**
+     * Returns the data
+     * @returns {any} The data
+     */
+    protected data(): any {
         return this._d;
     }
 
-    set(o, v) {
+
+    protected set(o: string, v: any) {
+
         if (!this._o.hasOwnProperty(o)) {
-            console.error(`"${o}" is not supported.`);
+
+            if (this._mayLog(JsonFormLogLevel.Errors)) {
+                this._log('Error', `"${o}" is not defined.`);
+            }
+
             return;
+
         }
 
         let type = typeof this._o[o];
@@ -521,31 +817,145 @@ class JsonForm {
         let valType = typeof v;
 
         if (typeof v !== typeof this._o[o]) {
-            console.error(`Type mismatch for "${o}" : "${type}". Current value is "${valType}".`);
+
+            if (this._mayLog(JsonFormLogLevel.Errors)) {
+                this._log('Error', `Type mismatch for "${o}" : "${type}". Current value is "${valType}".`);
+            }
+
             return;
         }
 
         this._o[o] = v;
+
     }
 
-    update() {
+    /**
+     * Removes all the input fields from the form
+     */
+    protected clear(): void {
+        this._clearForm(true);
+    }
 
-        let objName = this._getObjectName(this._d);
 
-        let path = this._o.model.length > 0 ? `${objName}.${this._o.model}` : objName;
+    /**
+     * Regenerates the form using the current data
+     */
+    protected update(): void {
+
+        const model = this.model();
+
+        const objName = this._getObjectName(this._d);
+
+        const path = this.hasModel() ? `${objName}.${model}` : objName;
 
         this._clearForm();
 
-        this._checkValues(this._o.model, path);
+        this._checkValues(model, path);
 
         this._updateTarget();
 
-        this._dispatchEvent('json-form.update');
+        this._dispatchEvent('update');
 
     }
 
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
-        this._o.body.addEventListener(type, listener, options);
+    /**
+     * Returns the model
+     * @returns {string} The model
+     */
+    protected model(): string {
+        return this._o.model;
     }
+
+
+    /**
+     * Checks if the model is set
+     * @returns {boolean} True if the model is set
+     */
+    protected hasModel(): boolean {
+        return !!this.model().length;
+    }
+
+
+    /**
+     * Returns the value of the form
+     * @returns {any} The value of the form
+     */
+    protected value(): any {
+        const model = this.model();
+        const data = this.data();
+        return model.length ? data[model] : data;
+    }
+
+
+    /**
+     * Returns the default value of the data
+     * @returns {any} The default value of the data
+     */
+    protected raw(): any {
+        return this._raw;
+    }
+
+
+    /**
+     * Resets the form to the default state
+     * @param {string} model The model to reset.
+     * @returns {any} The value of the form
+     */
+    protected reset(model: string = ""): any {
+
+        const initData = this._raw;
+
+        var _m = this.model();
+
+        if (model.length) {
+            _m = model;
+        }
+
+        if (_m.length) {
+            this._o.data[model] = initData[model];
+        } else {
+            this._o.data = initData;
+        }
+
+        return this.data();
+
+    }
+
+
+    /**
+     * Resets the whole data to the default value
+     * @returns {any} The value of the form
+     */
+    protected resetAll(): any {
+        return this.reset("");
+    }
+
+    /**
+     * Creates an element by using the given html string or node name.
+     * @param {string} htmlString The html string to create the element from.
+     * @returns {HTMLElement} The created element
+     */
+    private _createElementFromHTML(htmlString: string): HTMLElement {
+
+        if (/<\/?[a-z][\s\S]*>/i.test(htmlString)) {
+            var tmp = document.implementation.createHTMLDocument();
+            tmp.body.innerHTML = htmlString;
+            return tmp.body.firstChild as HTMLElement;
+        } else {
+            return document.createElement(htmlString);
+        }
+    }
+
+    /**
+     * Attaches an event handler to the body
+     * @param {string} type Event type
+     * @param {EventListenerOrEventListenerObject} listener Event listener
+     * @param {boolean | AddEventListenerOptions} [options] Event listener options
+     */
+    protected addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
+        this._bindEvents(this._o.body, type, listener, options);
+    }
+
 
 }
+

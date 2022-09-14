@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="../assets/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+
+    <title>JsonForm - Demo</title>
+
+</head>
+
+<body class="container-xxl py-3">
+
+    <h4>Events</h4>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <code>init</code>
+                    </td>
+                    <td>
+                        For when the form is initialized
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>json-form.update</code>
+                    </td>
+                    <td>
+                        Used to respond to changes in the form.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>json-form.update.data</code>
+                    </td>
+                    <td>
+                        Used to respond to changes in the data.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>json-form.update.target</code>
+                    </td>
+                    <td>
+                        Used to respond to changes in the target value.
+                    </td>
+                </tr>
+                
+            </tbody>
+        </table>
+    </div>
+
+    <h4>Filters</h4>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        updateTarget(<code> value: string </code>):<code>string</code>
+                    </td>
+                    <td>
+                        For when you need to change the value that is placed on the target.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        updateData(<code> args: { path , value , type }</code>):<code> any </code>
+                    </td>
+                    <td>
+                        For when you want to manipulate data values.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+
+</html>

@@ -5,378 +5,394 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/a11y-dark.min.css" />
-    <link rel="stylesheet" href="./assets/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/highlightjs-copy/dist/highlightjs-copy.min.css" />
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/languages/javascript.min.js"></script>
+    <link rel="stylesheet" href="./demo/assets/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+
+    <script src="https://unpkg.com/highlightjs-copy/dist/highlightjs-copy.min.js"></script>
+
 
     <script
         src="//cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.7.0/highlightjs-line-numbers.min.js"></script>
 
-    <script src="./dist/json-form.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/@rmanaf/json-form@latest/dist/json-form.min.js" 
+        integrity="sha384-qMmqQ0ea3blGNFy27M44an38WHQ9JiVveqT1qq3IG4BJlqUdrnyKUbrVafIb/sLT" 
+        crossorigin="anonymous"></script>
 
     <title>JsonForm - Demo</title>
 </head>
 
 <body>
-    <header role="banner" class="container">
-        <div class="row p-4">
-            <div class="col-2 d-flex justify-content-center align-items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" version="1.1">
-                    <path style="opacity:0.2"
-                        d="M 14.5,8 C 13.115,8 12,9.115 12,10.5 V 55.5 C 12,56.885 13.115,58 14.5,58 H 49.5 C 50.885,58 52,56.885 52,55.5 V 23 L 37,8 Z" />
-                    <path style="fill:#1c59a5"
-                        d="M 14.5,7 C 13.115,7 12,8.115 12,9.5 V 54.5 C 12,55.885 13.115,57 14.5,57 H 49.5 C 50.885,57 52,55.885 52,54.5 V 22 L 37,7 Z" />
-                    <path style="opacity:0.2" d="M 52,23 37,8 V 20.5 C 37,21.885 38.115,23 39.5,23 Z" />
-                    <path style="fill:#6295d3" d="M 52,22 37,7 V 19.5 C 37,20.885 38.115,22 39.5,22 Z" />
-                    <path style="opacity:0.1;fill:#ffffff"
-                        d="M 14.5 7 C 13.115 7 12 8.115 12 9.5 L 12 10.5 C 12 9.115 13.115 8 14.5 8 L 37 8 L 37 7 L 14.5 7 z" />
-                    <path style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;opacity:0.2"
-                        d="M 37,31 C 46,34 35,38 44,41 M 37,51 C 46,48 35,44 44,41 M 27,31 C 18,34 29,38 20,41 M 27,51 C 18,48 29,44 20,41" />
-                    <path style="fill:none;stroke:#ffffff;stroke-width:2;stroke-linecap:round"
-                        d="M 37,30 C 46,33 35,37 44,40 M 37,50 C 46,47 35,43 44,40 M 27,30 C 18,33 29,37 20,40 M 27,50 C 18,47 29,43 20,40" />
-                </svg>
-            </div>
+    <header role="banner" class="container-xxl position-relative">
+        <div class="row vh-50 ">
 
-            <div class="col-10">
-                <h1>JSON Form Generator</h1>
-                <h3>A lightweight JavaScript library for generating forms from JSON/Object.</h3>
+            <div class="col-12 d-flex flex-column justify-content-center align-items-center">
+                <h2>JSON Form Generator and Editor</h1>
+                    <h5>A lightweight JavaScript library for generating forms from JSON/Object.</h3>
             </div>
 
         </div>
 
-        <hr>
         <a href="https://github.com/Rmanaf/json-form"><img width="149" height="149"
                 src="https://github.blog/wp-content/uploads/2008/12/forkme_left_darkblue_121621.png?resize=149%2C149"
                 class="github-link attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
     </header>
 
-    <main role="main" class="container">
+    <main role="main" class="container-xxl">
 
-        <h4>Installation</h4>
+        <div class="row">
+            <div class="d-none d-md-flex col-3 flex-column">
+                <nav class="nav sticky-top nav-pills flex-column py-3">
 
-        <pre><code>$ npm install @rmanaf/json-form</code></pre>
+                    <a class="nav-link active" type="button" role="tab" data-bs-toggle="tab"
+                        data-bs-target="#installation">
+                        Installation
+                    </a>
 
-        <p>Or from the repository (Latest Version)</p>
+                    <a class="nav-link" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#usage">
+                        Usage
+                    </a>
 
-        <pre><code> &lt;head&gt;
-    &lt;script src="https://rmanaf.github.io/json-form/dist/json-form.min.js"&gt;&lt;/script&gt;
- &lt;/head&gt;</code></pre>
+                    <a class="nav-link" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#methods">
+                        Methods
+                    </a>
 
-    <br />
-        <h4>Usage</h4>
+                    <a class="nav-link" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#events">
+                        Events and Filters
+                    </a>
 
-        <pre><code class="js">new JsonForm(data: string | object, options?: object , target?: string);</code></pre>
+                    <a class="nav-link disabled" type="button" role="tab" data-bs-toggle="tab"
+                        data-bs-target="#examples">
+                        Examples
+                    </a>
+                    <a class="ms-4 nav-link" type="button" role="tab" data-bs-toggle="tab"
+                    data-bs-target="#bs5">
+                        Bootstrap Template
+                    </a>
+                    <a class="ms-4 nav-link" type="button" role="tab" data-bs-toggle="tab"
+                        data-bs-target="#custom-lables">
+                        Custom Labels
+                    </a>
+                    <a class="ms-4 nav-link" type="button" role="tab" data-bs-toggle="tab"
+                    data-bs-target="#exclude-fields">
+                        Exclude Path
+                    </a>
 
-        <h5>Data:</h5>
-        <p>JSON string or object</p>
+                    <a class="ms-4 nav-link" type="button" role="tab" data-bs-toggle="tab"
+                        data-bs-target="#field-attributes">
+                        Field Attributes
+                    </a>
 
-        <h5>Options <sub>optional</sub></h5>
-        <p>The following parameters are supported:</p>
+                    <a class="ms-4 nav-link" type="button" role="tab" data-bs-toggle="tab"
+                        data-bs-target="#form-validation">
+                        Form Validation
+                    </a>
 
-        <ul class="opt-list">
-            <li>body: <span>HTMLElement</span> , <cite>default: document.body</cite></li>
-            <li>model: <span>string</span> , <cite>default: " "</cite></li>
-            <li>exclude: <span>string[ ]</span> , <cite>default : [ ]</cite></li>
-            <li>labels: <span>object</span> , <cite>default : { }</cite></li>
-            <li>sections: <span>object</span> , <cite>default : { }</cite></li>
-            <li>showTypes: <span>boolean</span> , <cite>default : false</cite></li>
-            <li>allRequired: <span>boolean</span> , <cite>default : false</cite></li>
-            <li>optionals: <span>string[ ]</span> , <cite>default : [ ]</cite></li>
-            <li>types: <span>object</span> , <cite>default : { }</cite></li>
-            <li>attributes: <span>object</span> , <cite>default : { }</cite></li>
-            <li>encodeURI: <span>boolean</span> , <cite>default : false</cite></li>
-            <li>templates: <span>object</span> , <cite>default : { }</cite></li>
-            <li>meta: <span>object</span> , <cite>default : { }</cite></li>
-            <li>onchange: <span>object</span> , <cite>default : { }</cite></li>
-            <li>events: <span>object</span> , <cite>default : { "*" : "keyup keypress blur change", "*-number" : "keyup
-                    keypress blur change mouseup" }</cite></li>
-        </ul>
+                    <a class="ms-4 nav-link" type="button" role="tab" data-bs-toggle="tab"
+                    data-bs-target="#radio-and-select">
+                        Radio and Select
+                    </a>
 
-        <h5>Target <sub>optional</sub></h5>
-        <p>HTML element ID</p>
+                    <a class="ms-4 nav-link" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#datatable">
+                        Datatable
+                    </a>
 
-        <hr>
+                </nav>
 
-        <h5>Create Form:</h5>
+            </div>
+            <div class="col-12 col-md-9 tab-content py-3">
 
-        <pre>
-            <code class="js"> var data = {
-    a : {
-        b : {
-            c : "d"
+                <section id="installation" class="tab-pane fade show active" role="tabpanel">
+
+                    <h2>Installation</h2>
+                    <p class="description">
+                        To get started, you can choose one of the options below to install the JF.
+                    </p>
+                    <h4>
+                        Install via NPM
+                    </h4>
+                    <pre><code>npm install @rmanaf/json-form</code></pre>
+
+                    <h4>
+                        From CDN
+                    </h4>
+
+                    <p class="description my-3">Copy the code and paste it into the <code>&lt;head&gt;</code> tag of
+                        your HTML document.</p>
+                   
+                        
+                            <pre><code>&lt;script src="//cdn.jsdelivr.net/npm/@rmanaf/json-form@latest/dist/json-form.min.js" 
+        integrity="sha384-qMmqQ0ea3blGNFy27M44an38WHQ9JiVveqT1qq3IG4BJlqUdrnyKUbrVafIb/sLT" 
+        crossorigin="anonymous" &gt;&lt;/script&gt;</code></pre>
+                        
+                    
+
+                    <h4>
+                        Download the repository
+                    </h4>
+                    <p>You can also download the repository and upload the <code>dist</code> folder to your server.</p>
+
+                    <p>To clone the repository run the following command:</p>
+                    <pre><code>gh repo clone rmanaf/json-form</code></pre>
+
+                </section>
+
+                <section id="usage" class="tab-pane fade" role="tabpanel">
+
+                    <h2 id="usage">Usage</h2>
+                    <p class="description">
+                        You can use the JF constructor to create a new instance of the editor.
+                    </p>
+                    <pre><code class="js"> new JsonForm(data: string | object, options?: object , target?: string);</code></pre>
+
+                    <h5>Data</h5>
+                    <p>The data can be either a JSON string or an object.</p>
+                    <pre><code class="js">// Using JSON string
+const editor_1 = new JsonForm("{ key : value }");
+
+// Or using object
+var data = { key : "value" }
+const editor_2 = new JsonForm(data);</code></pre>
+
+                    <h5>Options</h5>
+                    <p>The following options are supported:</p>
+
+                    <ul class="opt-list">
+                        <li><b>body</b>: <span>HTMLElement</span> , <cite>default: document.body</cite>
+                            <p class="description">
+                                The element to which the form content will be appended.
+                            </p>
+                        </li>
+                        <li><b>model</b>: <span>string</span> , <cite>default: " "</cite>
+                            <p class="description">
+                                The model specifies which subset of the input data to use for form generation.
+                            </p>
+                        </li>
+                        <li><b>exclude</b>: <span>string[ ]</span> , <cite>default : [ ]</cite>
+                            <p class="description">
+                                Paths that should not be in the form. (e.g. <code>data.model.property</code> or <code>/.+/</code>)
+                            </p>
+                        </li>
+                        <li><b>labels</b>: <span>object</span> , <cite>default : { }</cite>
+                            <p class="description">
+                                List of labels associated with each field. If you are using templates, you can use the <code>{{label}}</code> to display the label.
+                            </p>
+                        </li>
+                        <li><b>sections</b>: <span>object</span> , <cite>default : { }</cite>
+                            <p class="description">
+                                You can use the sections property to group fields. The section list contains the section name as the key and an object as the value that supports the following properties:
+                            <ul>
+                                <li>
+                                    <b>children</b>: <span>string[ ]</span> , <cite>default : [ ]</cite>
+                                    <p class="description">
+                                        A list containing paths that will be grouped in this section. (e.g. <code>data.model.property</code> or <code>/.+/</code>)
+                                    </p>
+                                </li>
+                                <li>
+                                    <b>template</b>: <span>string</span>, <cite>default : "section"</cite>
+                                    <p class="description">
+                                        The node name of this section. (e.g. <code>tr</code>) or HTML string (e.g.
+                                        <code>&lt;tr&gt;&lt;/tr&gt;</code>).
+                                    </p>
+                                </li>
+                                <li>
+                                    <b>repeat</b>: <span>boolean</span> , <cite>default : false</cite>
+                                    <p class="description">
+                                        If true, the section will be repeated for each child.
+                                    </p>
+                                </li>
+                                <li>
+                                    <b>merge</b>: <span>boolean</span>, <cite>default : false</cite>
+                                    <p class="description">
+                                        For array of objects, all the properties of each object will be placed in this section.
+                                    </p>
+                                </li>
+                            </ul>
+                            </p>
+                        </li>
+                        <li><b>types</b>: <span>object</span> , <cite>default : { }</cite>
+                            <p class="description">
+                                The type that will be used for input. By default, the input type is associated with the property type. 
+                                <br>
+                                <div class="table-responsive">
+                                <table class="table table-stripped">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Property Type
+                                            </th>
+                                            <th>
+                                                Result
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <b>String</b>
+                                            </td>
+                                            <td>
+                                                &lt;input type="text"/&gt;
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <b>Number</b>
+                                            </td>
+                                            <td>
+                                                &lt;input type="number"/&gt;
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <b>Boolean</b>
+                                            </td>
+                                            <td>
+                                                &lt;input type="checkbox"/&gt;
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                </div>
+                                <br>
+                                You can use the <code>{{inputType}}</code> to put the input type in the template.
+                            </p>
+                        </li>
+                        <li><b>attributes:</b> <span>object</span> , <cite>default : { }</cite>
+                            <p class="description">
+                                The list of attributes for each input. For example, you can use the <code>placeholder</code> attribute to set the placeholder for an input.
+                                <pre><code class="js hljs language-javascript">const options = {
+    attributes: {
+        "foo.bar": {
+            placeholder: "Enter a value..."
         }
-    },
-    e : {
-        f : 0
     }
- }
-
- var editor = new JsonForm(data);</code>
-        </pre>
-
-        <h5>Result:</h5>
-        <form class="row">
-
-            <div class="col-12 col-sm-6">
-                <div class="model-editor" data-model-editor data-model="usage1"></div>
-            </div>
-
-            <div class="col-12 col-sm-6">
-                <textarea id="u1placeholder" readonly class="form-control" rows="6"></textarea>
-            </div>
-
-        </form>
-
-        <hr>
-
-        <h5>Custom Labels:</h5>
-
-        <pre>
-        <code> var editor = new JsonForm(data , {
-    labels : {
-        'data.a.b.c' : "Custom Label 1",
-        'data.e.f' : "Custom Label 2",
+}</code></pre>
+                            </p>
+                        </li>
+                      
+                        <li><b>templates</b>: <span>object</span> , <cite>default : { }</cite>
+                            <p class="description">
+                                List of template IDs to use for the fields. Here is an example of defining a template:
+                                <br>
+                                <b>Options:</b>
+                                <pre><code >const options = {
+    templates: {
+        "data.path.to.property": "template-id"
     }
- });</code>
-    </pre>
-        <h5>Result:</h5>
-
-        <form class="row">
-
-            <div class="col-12">
-                <div class="model-editor" data-model-editor data-model="usage2"></div>
-            </div>
-
-        </form>
-
-
-        <hr>
-
-        <h5>Exclude Fields:</h5>
-
-        <pre>
-
-        <code> var editor = new JsonForm(data , {
-    exclude : [
-        'data.e' // or 'data.e.f'
-    ]
- });</code>
-    </pre>
-
-        <h5>Result:</h5>
-
-        <form class="row">
-
-            <div class="col-12">
-                <div class="model-editor" data-model-editor data-model="usage3"></div>
-            </div>
-
-        </form>
-
-        <hr>
-        <h5>Field Attributes:</h5>
-
-        <pre>
-
-        <code> var editor = new JsonForm(data , {
-    attributes : [
-        'data.e.f' : {
-            "min" : 0,
-            "max" : 10,
-            "class" : "form-control is-invalid"
-        }
-    ]
- });</code>
-    </pre>
-
-        <h5>Result:</h5>
-
-        <form class="row">
-
-            <div class="col-12">
-                <div class="model-editor" data-model-editor data-model="usage4"></div>
-            </div>
-
-        </form>
-
-
-        <hr>
-        <h5>Custom Template:</h5>
-
-        <pre>
-
-        <code class="js"> var editor = new JsonForm(data , {
-    templates : {
-        'data.e.f' : 'myTemplate'
-    }
- });</code>
-    </pre>
-        <h6>HTML Code:</h6>
-        <pre>
-        <code class="html">&lt;template id="myTemplate"&gt;{{label}}&lt;input type="{{inputType}}" id="{{id}}"&gt;&lt;/template&gt;</code>
-    </pre>
-        The following parameters are supported:
-        <ul>
-            <li><b>id</b></li> 
-            <li><b>inputType</b></li>
-            <li><b>type</b></li>
-            <li><b>label</b></li>
-            <li><b>value</b></li>
-        </ul>
-        
-        <div class="alert alert-info" role="alert">You can define more parameters in meta section.</div>
-        
-        <pre>
-
-        <code class="js"> var editor = new JsonForm(data , {
-    meta : {
-        '*' : {
-            "info" : "custom value",
-            "fn" : (args) => { return args.value.toUpperCase(); }
-        }
-    },
-    templates : {
-        '*' : 'myTemplate'
-    }
- });</code>
-    </pre>
-        <h6>HTML Code:</h6>
-        <pre>
-        <code class="html">&lt;template id="myTemplate"&gt;{{label}}&lt;input type="{{inputType}}" id="{{id}}"&gt;{{info}}: {{fn}}&lt;/template&gt;</code>
-    </pre>
-
-        <hr>
-
-        <h5>Update Form:</h5>
-        You can update forms by using the <b>update()</b> method.
-        <pre><code class="js">var num = 0;
-function addNewEllement() {
-
-    num++;
-
-    data.model["product_" + num] = {
-        name: "Name",
-        available: true,
-        count: 10
-    }
-
-    editor.update();
-
-}
-        </code></pre>
-        <form class="row">
-
-            <div class="col-12 col-sm-6">
-                <div class="model-editor" data-model-editor data-model="usage5"></div>
-                <input class="btn btn-primary" type="button" value="Add Item" onclick="addNewEllement()">
-            </div>
-
-
-            <div class="col-12 col-sm-6">
-                <textarea id="u5placeholder" readonly class="form-control" rows="6"></textarea>
-            </div>
-
-        </form>
-
-        <hr>
-        <h5>Form Validation</h5>
-        A simple login form:
-        <pre><code>var data = {
-    "login" : {
-        "name" : "",
-        "pass" : ""
-    }
-}
-const editor = new JsonForm(data , {
-    "model" : "login"
-    "labels" : {
-        "data.login.name" : "Username:",
-        "data.login.pass" : "Password:"
-    },
-    "attributes" : {
-        "data.login.name" : {
-            "type" : "text",
-            "minlength" : 4
+}</code></pre>
+<b>Template:</b>
+                                <pre><code>&lt;template id="template-id"&gt;
+    &lt;input id={{id}} type="{{inputType}}" placeholder="Enter a value..."&gt;
+&lt;/template&gt;</code></pre>
+                            </p>
+                        </li>
+                        <li><b>meta</b>: <span>object</span> , <cite>default : { }</cite>
+                            <p class="description">
+                                To define more variables for use in templates, you can use the meta attribute. The meta value can be a function.
+                            </p>
+                                <pre><code>const options = {
+    meta : { 
+        "path.to.property" : { 
+            "metaName" : "metaValue" 
         },
-        "data.login.pass" : {
-            "type" : "password",
-            "minlength" : 8
-        }
-    },
-    "onchange" : {
-        "data.login.name" : function(target, value, path, type){ 
+        "foo.bar" : {
+            "path" : (args) => {
+                // args.id is the element ID.
+                // args.inputType is the input type. (text, number, password, checkbox and etc.)
+                // args.type is the property type.
+                // args.label is the input label.
+                // args.value is the current value of the input.
+                // args.path is the propery path.
 
-            // Username validator
-
-            const regex = /^[A-Za-zñÑáéíóúÁÉÍÓÚ][a-zA-ZñÑáéíóúÁÉÍÓÚ0-9_]+$/;
-            const valid = value.match(regex);
-
-            if(valid == null){
-                target.classList.add("is-invalid");
-            }else{
-                target.classList.remove("is-invalid");
-            }
-       },
-       "data.login.pass" : function(target, value, path, type){ 
-
-           // Password validator
-
-            const regex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[_$@$!%*?&]).+$/;
-            const valid = value.match(regex);
-
-            if(valid == null){
-                target.classList.add("is-invalid");
-            }else{
-                target.classList.remove("is-invalid");
+                return args.path;
             }
         }
-   } 
-});</code></pre>
-<form class="row">
+    }
+}</code></pre>
+                            <p class="description">
+                                
 
-    <div class="col-12 col-sm-6">
-        <div class="model-editor" data-model-editor data-model="login" ></div>
-    </div>
+                            </p>
+                        </li>  
+                        </li>
+                        <li><b>events</b>: <span>object</span> , <cite>default : { "*" : "keyup keypress blur change",
+                                "*-number" :
+                                "keyup
+                                keypress blur change mouseup" }</cite>
+                            <p class="description">
+                                The input events. You can define custom events for specific inputs.
+                            </p>
+                            </li>
+                    </ul>
 
-    <div class="col-12 col-sm-6">
-        <textarea id="u6placeholder" readonly class="form-control" rows="6"></textarea>
-    </div>
+                    <h5>Target <sub>optional</sub></h5>
+                    <p>
+                        JF will automatically print the form values in the target element. You can use it for debugging or sending JSON through a form.
+                    </p>
 
-</form>
+                </section>
+                
+                <section id="custom-lables" class="tab-pane fade" role="tabpanel">
+                    <iframe src="./demo/pages/custom-labels.html" width="100%" height="900px"></iframe>
+                </section>
 
-        <!--  bootstrap-templates -->
+                <section id="exclude-fields" class="tab-pane fade" role="tabpanel">
+                    <iframe src="./demo/pages/exclude.html" width="100%" height="900px"></iframe>
+                </section>
 
-        <template id="inputTemplate">
-            <div class="from-group">
-                <label for="{{id}}">{{label}}</label>
-                <input id="{{id}}" class="form-control">
-                <small class="form-text text-muted">{{description}}</small>
+                <section id="field-attributes" class="tab-pane fade" role="tabpanel">
+                    <iframe src="./demo/pages/attributes.html" width="100%" height="900px"></iframe>
+                </section>
+
+
+                <section id="methods" class="tab-pane fade" role="tabpanel">
+                   <iframe src="./demo/pages/methods.html" width="100%" height="700px" ></iframe>
+                </section>
+
+                <section id="events" class="tab-pane fade" role="tabpanel">
+                    <iframe src="./demo/pages/events.html" width="100%" height="700px" ></iframe>
+                </section>
+
+                <section id="bs5" class="tab-pane fade" role="tabpanel">
+                   <iframe src="./demo/pages/bs5.html" width="100%" height="1300px"></iframe>
+                </section>
+
+                <section id="form-validation" class="tab-pane fade" role="tabpanel">
+                    <iframe src="./demo/pages/validation.html" width="100%" height="2500px"></iframe>
+                </section>
+
+                <section id="datatable" class="tab-pane fade" role="tabpanel">
+                    <iframe src="./demo/pages/datatable.html" width="100%" height="3500px"></iframe>
+                </section>
+                
+                <section id="radio-and-select" class="tab-pane fade" role="tabpanel">
+                    <iframe src="./demo/pages/radio-n-select.html" width="100%" height="2600px"></iframe>
+                </section>
+
             </div>
-        </template>
-
-        <template id="checkboxTemplate">
-            <div class="form-check">
-                <input class="form-check-input" id="{{id}}">
-                <label class="form-check-label" for="{{id}}">
-                    {{label}}
-                </label>
-            </div>
-        </template>
-
-
+        </div>
+        
     </main>
 
-    <footer role="contentinfo" class="container mt-5 p-4 bg-light">
-       <p> by <a href="https://rmanaf.com">@Rmanaf</a> </p>
+    <footer role="contentinfo" class="container-xxl mt-5 p-4 bg-light">
+        <p class="m-0"> By <a href="https://github.com/rmanaf">@Rmanaf</a> </p>
     </footer>
 
-    <script src="./assets/script.js"></script>
+    <script>
+        hljs.addPlugin(new CopyButtonPlugin());
+        hljs.highlightAll();
+    </script>
 
 </body>
 

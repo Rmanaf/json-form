@@ -1,6 +1,6 @@
 {
   "name": "@rmanaf/json-form",
-  "version": "0.9.9",
+  "version": "0.9.10",
   "description": "A lightweight JavaScript library for generating forms from JSON/Object.",
   "main": "./dist/json-form.js",
   "scripts": {

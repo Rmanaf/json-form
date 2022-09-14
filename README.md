@@ -6,7 +6,7 @@ A lightweight JavaScript library for generating forms from JSON/Object.
 
 
 ## Getting Started
-See the installation and usage instructions [here](https://rmanaf.github.io/json-form/index.html)
+See instructions [here](https://rmanaf.github.io/json-form/index.html)
 
 ## Contributing
 Please feel free to contribute!

@@ -1,10 +1,12 @@
 {
   "name": "@rmanaf/json-form",
-  "version": "0.9.10",
-  "description": "A lightweight JavaScript library for generating forms from JSON/Object.",
+  "version": "1.0.0",
+  "description": "A lightweight JavaScript library for generating dynamic forms from JSON/Object.",
   "main": "./dist/json-form.js",
+  "module": "dist/json-form.esm.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc && node ./bundle.js "
   },
   "repository": {
     "type": "git",
@@ -18,8 +20,14 @@
   ],
   "author": "Rmanaf <me@rmanaf.com>",
   "license": "MIT",
+  "licenseUrl": "https://github.com/Rmanaf/json-form/blob/master/LICENSE",
   "bugs": {
     "url": "https://github.com/Rmanaf/json-form/issues"
   },
-  "homepage": "https://github.com/Rmanaf/json-form#readme"
+  "homepage": "https://github.com/Rmanaf/json-form",
+  "devDependencies": {
+    "decomment": "^0.9.5",
+    "minifier": "^0.8.1",
+    "node-minify": "^3.6.0"
+  }
 }

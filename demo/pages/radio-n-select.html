@@ -37,28 +37,21 @@
         <div class="col-12 ">
             <div id="selectFormBody"></div>
         </div>
-
     </form>
-
-    <div class="row my-1">
-        <div class="col-12">
-            <textarea class="form-control" readonly id="formOutput" rows="2"></textarea>
-        </div>
-    </div>
 
     <template id="radioTemplate">
         <section id="{{id}}">
             <p>Radio Group:</p>
             <label>
-                <input {{fn|male|hi}} data-jf-path="{{path}}" name="{{id}}" type="radio" value="male" />
+                <input data-jf-path="{{path}}" {{fn|male}} name="{{id}}" type="radio" value="male" />
                 Male
             </label>
             <label>
-                <input {{fn|female}} data-jf-path="{{path}}" name="{{id}}" type="radio" value="female" />
+                <input data-jf-path="{{path}}"  {{fn|female}} name="{{id}}" type="radio" value="female" />
                 Female
             </label>
             <label>
-                <input {{fn|other}} data-jf-path="{{path}}" name="{{id}}" type="radio" value="other" />
+                <input data-jf-path="{{path}}"  {{fn|other}} name="{{id}}" type="radio" value="other" />
                 Other
             </label>
         </section>
@@ -66,7 +59,7 @@
 
     <template id="selectTemplate">
         <p class="my-3">Select:</p>
-        <select name="{{id}}" id="{{id}}" class="form-select my-1">
+        <select data-jf-path="{{path}}"  name="{{id}}" id="{{id}}" class="form-select my-1">
             <option value="male" {{fn|male}}>
                 Male
             </option>
@@ -116,17 +109,15 @@
             }
         }
 
-        const output = document.getElementById("formOutput");
-
-        const editor_1 = new JsonForm(data, JsonForm.merge({
-            body: document.getElementById("radioFormBody"),
+        JsonForm.create(data, JsonForm.Utilities.merge({
+            body: "radioFormBody",
             model: "radio",
-        }, options), output);
+        }, options));
 
-        const editor_2 = new JsonForm(data, JsonForm.merge({
-            body: document.getElementById("selectFormBody"),
+        JsonForm.create(data, JsonForm.Utilities.merge({
+            body: "selectFormBody",
             model: "select",
-        }, options), output);
+        }, options));
 
     </script>
 

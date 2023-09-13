@@ -1,0 +1,16 @@
+node_modules/
+
+# Hidden directories
+.vscode/
+.git/
+
+# Demo directories and files
+assets/
+demo/
+src/
+
+index.html
+
+# Development
+tsconfig.json
+bundle.js

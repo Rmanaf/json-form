@@ -25,9 +25,6 @@
     <h5>JavaScript:</h5>
     <script src="https://gist.github.com/Rmanaf/11aa6c0e4cf64d045fe8f221764cabdd.js"></script>
     
-    <h5>HTML:</h5>
-    <script src="https://gist.github.com/Rmanaf/236ca55f9224ef2d67daba8b026d0170.js"></script>
-
     <h5>Result:</h5>
     
     <div id="formBody" ></div>
@@ -48,15 +45,15 @@
 
         var data = { foo : 10 , baz : "" }
 
-        const editor = new JsonForm(data, { 
-            body: document.getElementById("formBody"),
+        JsonForm.create(data, { 
+            body: "formBody",
             attributes : {
                 'data.foo' : {
                     "min" : 0,
                     "max" : 10
                 },
                 'data.baz'  : {
-                    "placeholder" : "Placeholder"
+                    "placeholder" : "Enter Baz..."
                 }
             }
         });

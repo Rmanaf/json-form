@@ -15,6 +15,7 @@
         crossorigin="anonymous"></script>
 
     <script src="../../dist/json-form.js"></script>
+    <script src="../../dist/extensions/modifiers.js"></script>
 
     <title>JsonForm - Demo</title>
 
@@ -25,40 +26,50 @@
     <h5>JavaScript:</h5>
     <script src="https://gist.github.com/Rmanaf/2d14fdeda85e7d6a0fae04e9aebcb40f.js"></script>
 
-    <h5>HTML:</h5>
-    <script src="https://gist.github.com/Rmanaf/24b6a06b4c7f37ae621cfbcd1fa1a911.js"></script>
-
     <h5>Result:</h5>
-    
-    <div id="formBody" ></div>
+
+    <div class="row">
+
+        <div class="col-12 col-sm-6">
+            <div id="formBody"></div>
+        </div>
+
+        <div class="col-12 col-sm-6">
+            <textarea id="formOutput" readonly class="form-control" rows="10"></textarea>
+        </div>
+
+    </div>
 
     <style>
-        #formBody label{
+        #formBody label {
             margin-right: .5rem;
         }
-        #formBody input{
+
+        #formBody input {
             margin-left: .5rem;
         }
-        #formBody label:last-child{
+
+        #formBody label:last-child {
             margin-right: 0;
         }
     </style>
-   
+
     <script>
 
-        var data = { foo : { bar : "Bar" , baz : 0  , qux : { item_1 : 0 , item_2 : "Hello World!" }} }
+        var data = { foo: { bar: "Bar", baz: 0, qux: { item_1: 0, item_2: "Hello World!" } } }
 
-        const editor = new JsonForm(data, { 
-            body: document.getElementById("formBody"),
-            exclude: [
-                "data.foo.bar",
-                "/.+\\.qux\\..+/" // Or 'data.foo.qux'
-            ]
-        });
+        JsonForm
+            .create(data, {
+                body: "formBody",
+                exclude: [
+                    "data.foo.bar",
+                    "/.+\\.qux\\..+/" // Or 'data.foo.qux'
+                ]
+            }, "formOutput")
+            .use(JsonForm.Modifiers.TargetPrettifier);
 
     </script>
 
 </body>
 
 </html>
-

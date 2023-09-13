@@ -15,6 +15,7 @@
         crossorigin="anonymous"></script>
 
     <script src="../../dist/json-form.js"></script>
+    <script src="../../dist/extensions/modifiers.js"></script>
 
     <title>JsonForm - Demo</title>
 
@@ -26,7 +27,7 @@
     <h5>HTML:</h5>
     <script src="https://gist.github.com/Rmanaf/5e7c731c9fa00935f75839a9a33c0db3.js"></script>
     <h5>Result:</h5>
-    <form class="row">
+    <form method="POST" class="row">
         <div class="col-12 ">
             <table class="table">
                 <thead>
@@ -46,9 +47,6 @@
                     </tr>
                 </tfoot>
             </table>
-        </div>
-        <div class="col-12">
-            <textarea readonly class="form-control" id="formOutput" rows="10"></textarea>
         </div>
     </form>
 
@@ -93,8 +91,8 @@
             ]
         }
 
-        const editor = new JsonForm(data, {
-            body: document.getElementById("formBody"),
+        let editor = JsonForm.create(data, {
+            body: "formBody",
             templates: {
                 "/.+\\.tags\\[0\\]/": "genderSelectTemplate",
                 "/.+\\.tags\\[1\\]/": "bloodGroupSelectTemplate",
@@ -123,14 +121,8 @@
                     merge: true
                 }
             }
-        },);
-
-        editor.addEventListener('json-form.update json-form.update.data', function (e) {
-            let output = document.getElementById("formOutput");
-            output.value = JSON.stringify(editor.data(), null, "\t");
-        });
-
-        editor.update();
+        })
+        .use(JsonForm.Modifiers.TargetPrettifier);
 
         function insertRow() {
 

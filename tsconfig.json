@@ -1,0 +1,18 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "allowJs": true,
+        "outDir": "./dist",
+        "target": "ES5",
+        "module": "CommonJS",
+        "removeComments": false,
+        "preserveConstEnums": false,
+        "sourceMap": false,
+        "declaration": true, // Enable declaration file generation
+        "declarationMap": false, // Generate declaration map for separate source map files
+        "declarationDir": "./dist" // Specify the output directory for declaration files
+    },
+    "include" : [
+        "./src/**/*"
+    ]
+}

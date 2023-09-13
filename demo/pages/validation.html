@@ -15,6 +15,8 @@
         crossorigin="anonymous"></script>
 
     <script src="../../dist/json-form.js"></script>
+    <script src="../../dist/extensions/modifiers.js"></script>
+    <script src="../../dist/extensions//validators.js"></script>
 
     <title>JsonForm - Demo</title>
 
@@ -26,7 +28,7 @@
     <h5>HTML:</h5>
     <script src="https://gist.github.com/Rmanaf/b2e7ee788711bd7336f1b50d5520a057.js"></script>
     <h5>Result:</h5>
-    <form class="row">
+    <form class="row" tabindex="0">
 
         <div class="col-12 col-sm-6">
             <div id="formBody"></div>
@@ -40,84 +42,49 @@
 
     <template id="inputTemplate">
         <div class="from-group">
-            <label for="{{id}}">{{label}}</label>
-            <input id="{{id}}" class="form-control">
-            <small class="form-text text-muted">{{hint}}</small>
+            <input placeholder="{{label}}" id="{{id}}" class="form-control">
+            <p class="form-text text-danger" data-jf-errors="{{path}}"></p>
         </div>
     </template>
 
     <script>
 
-        var data = { login: { username: "", password: "" } }
+        //JsonForm.Engine.LOG_LEVEL = JsonForm.LogLevel.All;
 
-        const editor = new JsonForm(data, {
-            body: document.getElementById("formBody"),
+        var data = { login: { email: "", password: "" } }
+
+        JsonForm.create(data, {
+            body: "formBody",
             labels: {
-                "data.login.username": "Username: ",
-                "data.login.password": "Password: "
+                "data.login.email": "Email",
+                "data.login.password": "Password"
             },
             templates: {
                 "*": "inputTemplate"
             },
             attributes: {
-                "data.login.username": {
-                    autocomplete: "username"
+                "data.login.email": {
+                    autocomplete: "email",
                 },
                 "data.login.password": {
                     type: "password",
-                    autocomplete: "current-password"
-                }
-            },
-            meta: {
-                "data.login": {
-                    hint: (args) => {
-                        switch (args.path) {
-                            case "data.login.username":
-                                return "At least 5 characters, including [a-z] and [0-9].";
-                            case "data.login.password":
-                                return "At least 9 characters, including [a-z, A-Z], [0-9] and special characters.";
-                        }
-                    }
+                    autocomplete: "current-password",
                 }
             }
-        }, document.getElementById("formOutput"));
+        }, "formOutput")
+            .use(JsonForm.Validators.Required, '*')
+            .use(JsonForm.Validators.Email, 'data.login.email')
+            .use(JsonForm.Validators.Password, 'data.login.password')
+            .use(JsonForm.Modifiers.TargetPrettifier)
+            .use(JsonForm.StateChecker, (checker, element, state) => {
+                const isValidityState = /invalid|valid/.test(state);
 
-        editor.addEventListener("json-form.change", function (e) {
-
-            const path = e.detail.path;
-            const target = e.detail.target;
-            const value = e.detail.value;
-
-            let regex = "";
-
-            switch (path) {
-                case "data.login.username":
-                    regex = /^[A-Za-zñÑáéíóúÁÉÍÓÚ][a-zA-ZñÑáéíóúÁÉÍÓÚ0-9_]{4,}$/;
-                    break;
-
-                case "data.login.password":
-                    regex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[_$@$!%*?&]).{8,}$/;
-                    break;
-            }
-
-            const valid = value.match(regex);
-
-            if (valid == null) {
-                target.classList.add("is-invalid");
-                target.classList.remove("is-valid");
-            } else {
-                target.classList.add("is-valid");
-                target.classList.remove("is-invalid");
-            }
-
-        });
-
-        // prettify output
-        editor.updateTarget = function (value) {
-            return JSON.stringify(editor.data(), null, "\t")
-        }
-
-        editor.update();
+                if(element && isValidityState){
+                    const isValid = state === 'valid';
+                    element.classList.add(isValid ? 'is-valid' : 'is-invalid');
+                    element.classList.remove(isValid ? 'is-invalid' : 'is-valid');  
+                }
+            })
 
     </script>
 

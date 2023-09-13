@@ -47,8 +47,8 @@
 
         var data = { foo : { bar : "Bar" , baz : 0 } }
 
-        const editor = new JsonForm(data, { 
-            body: document.getElementById("formBody"),
+        JsonForm.create(data, { 
+            body: "formBody",
             labels: {
                 "data.foo.bar"  : "Bar Value:",
                 "data.foo.baz" : "Baz Value:"

@@ -15,6 +15,7 @@
         crossorigin="anonymous"></script>
 
     <script src="../../dist/json-form.js"></script>
+    <script src="../../dist/extensions/modifiers.js"></script>
 
     <title>JsonForm - Demo</title>
 
@@ -26,43 +27,46 @@
     <h5>HTML:</h5>
     <script src="https://gist.github.com/Rmanaf/ccf21953825fcde7b7eca775b8ff7ea2.js"></script>
     <h5>Result:</h5>
-    <form class="row">
+    <div class="row">
 
         <div class="col-12 col-sm-6">
-            <div id="formBody"></div>
+            <form method="POST">
+                <div id="formBody"></div>
+                <input disabled type="submit" class="btn btn-primary mt-2"></input>
+            </form>
         </div>
 
         <div class="col-12 col-sm-6">
             <textarea id="formOutput" readonly class="form-control" rows="10"></textarea>
         </div>
 
-    </form>
+    </div>
 
     <template id="inputTemplate">
-        <div class="from-group">
+        <div class="from-group my-2">
             <label for="{{id}}">{{label}}</label>
             <input id="{{id}}" class="form-control">
-            <small class="form-text text-muted">{{description}}</small>
         </div>
     </template>
 
     <script>
 
-        var data = { foo : { bar : {  stringValue : "Hello World!" } },  intValue : { age : 0 } }
-
-        const editor = new JsonForm(data, { 
-            body: document.getElementById("formBody"),
-            templates: {
-                "*" : "inputTemplate"
-            }
-        } , document.getElementById("formOutput"));
-
-        // prettify output
-        editor.updateTarget = function(value) {
-            return JSON.stringify(editor.data() , null, "\t") 
+        var data = { 
+            foo: { 
+                bar: { 
+                    stringValue: "Hello World!" , 
+                    intValue: 10
+                } 
+            }, 
+            intValue: 0 
         }
 
-        editor.update();
+        JsonForm
+            .create(data, {
+                body: "formBody",
+                templates: { "*": "inputTemplate" }
+            }, "formOutput")
+            .use(JsonForm.Modifiers.TargetPrettifier);
 
     </script>
 

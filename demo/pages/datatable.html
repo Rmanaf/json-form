@@ -104,7 +104,7 @@
             meta: {
                 '*': {
                     'fn': (args) => {
-                        if (args.inputType === "select" && args.userData[0] == args.value) {
+                        if (args.inputType === "select" && args.templateData[0] == args.value) {
                             return "selected";
                         }
                         return "";

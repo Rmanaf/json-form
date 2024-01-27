@@ -33,4 +33,4 @@ Please feel free to contribute!
 This project is licensed under the MIT license.
 [More](https://github.com/Rmanaf/json-form/blob/master/LICENSE)
 
-Copyright (c) 2020 Rmanaf <me@rmanaf.com>
+Copyright (c) 2020 Rmanaf <rman.afzal@gmail.com>

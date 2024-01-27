@@ -1,6 +1,6 @@
 {
   "name": "@rmanaf/json-form",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A lightweight JavaScript library for generating dynamic forms from JSON/Object.",
   "main": "./dist/json-form.js",
   "module": "dist/json-form.esm.js",
@@ -18,7 +18,7 @@
     "generator",
     "json"
   ],
-  "author": "Rmanaf <me@rmanaf.com>",
+  "author": "Rmanaf <rman.afzal@gmail.com>",
   "license": "MIT",
   "licenseUrl": "https://github.com/Rmanaf/json-form/blob/master/LICENSE",
   "bugs": {

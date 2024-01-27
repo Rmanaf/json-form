@@ -1,5 +1,5 @@
 /** 
- * JsonForm | A lightweight JavaScript library for generating dynamic forms from JSON/Object. v1.0.0 (https://github.com/Rmanaf/json-form) 
+ * JsonForm | A lightweight JavaScript library for generating dynamic forms from JSON/Object. v1.0.1 (https://github.com/Rmanaf/json-form) 
  * Licensed under MIT (https://github.com/Rmanaf/json-form/blob/master/LICENSE) 
  */var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
@@ -105,7 +105,7 @@ var JsonForm;
             setTimeout(function () {
                 _this.update();
                 setTimeout(function () {
-                    _this._dispatchEvent("init");
+                    _this._dispatchEvent('init');
                 });
             }, JsonForm.STAGE_DELAY_INITIAL);
         }
@@ -153,7 +153,6 @@ var JsonForm;
         };
         Engine.prototype._createFromTemplate = function (id, path, value, inputType, type, label, template) {
             var _a;
-            var _this = this;
             var templateVal = this._o.templates[template];
             var doc = this._o.body.ownerDocument;
             var temp = doc.getElementById(templateVal);
@@ -171,18 +170,16 @@ var JsonForm;
             if (meta) {
                 dict = JsonForm.Utilities.merge(dict, this._o.meta[meta.match]);
             }
-            Object.keys(dict).forEach(function (key) {
-                var args = JsonForm.Utilities.merge(dict, { parsePath: _this._parsePath });
-                clone.innerHTML = clone.innerHTML.replace(/{{[^{}]+}}/g, function (key) {
-                    var keySeq = key.replace(/[{}]+/g, "").split("|");
-                    var result = dict[keySeq[0]] || "";
-                    if (typeof result === "function") {
-                        var userData = keySeq.length ? keySeq.slice(1, keySeq.length) : [];
-                        result = result(JsonForm.Utilities.merge(args, { userData: userData }));
-                    }
-                    return result;
-                }.bind(_this));
-            });
+            var args = JsonForm.Utilities.merge(dict, { parsePath: this._parsePath });
+            clone.innerHTML = clone.innerHTML.replace(/{{[^{}]+}}/g, function (key) {
+                var keySeq = key.replace(/[{}]+/g, "").split("|");
+                var result = dict[keySeq[0]] || "";
+                if (typeof result === "function") {
+                    var templateData = keySeq.length ? keySeq.slice(1, keySeq.length) : [];
+                    result = result(JsonForm.Utilities.merge(args, { templateData: templateData }));
+                }
+                return result;
+            }.bind(this));
             var fragment = document.importNode(clone.content, true);
             (_a = this._nodes).push.apply(_a, fragment.childNodes);
             this._appendInput(fragment, path);
@@ -676,6 +673,7 @@ var JsonForm;
         };
         Engine.prototype.on = function (type, listener, options) {
             this._bindEvents(this._o.body, type, listener, options);
+            return this;
         };
         Engine.prototype.find = function () {
             var _this = this;

@@ -1,10 +1,10 @@
 /**
  * JsonForm | A lightweight JavaScript library for generating dynamic forms from JSON/Object.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Homepage: https://github.com/Rmanaf/json-form
  * Licensed under MIT (https://github.com/Rmanaf/json-form/blob/master/LICENSE)
  * Author: Rmanaf
- * Email: me@rmanaf.com
+ * Email: rman.afzal@gmail.com
  * Description: This is a library for generating dynamic forms based on JSON data.
  * It provides various options to customize the form and handle form events.
  */
@@ -241,7 +241,7 @@ namespace JsonForm {
                 setTimeout( () => {
 
                     // Dispatch the 'init' event to indicate that the form has been initialized.
-                    this._dispatchEvent("init");
+                    this._dispatchEvent('init');
 
                 } );
 
@@ -418,27 +418,24 @@ namespace JsonForm {
                 dict = JsonForm.Utilities.merge(dict, this._o.meta[meta.match]);
             }
 
-            // Iterate through the dictionary and replace the template placeholders with the actual values.
-            Object.keys(dict).forEach(key => {
 
-                const args = JsonForm.Utilities.merge(dict, { parsePath: this._parsePath });
+            const args = JsonForm.Utilities.merge(dict, { parsePath: this._parsePath });
 
-                clone.innerHTML = clone.innerHTML.replace(/{{[^{}]+}}/g, function (key) {
+            clone.innerHTML = clone.innerHTML.replace(/{{[^{}]+}}/g, function (key) {
 
-                    const keySeq = key.replace(/[{}]+/g, "").split("|");
+                const keySeq = key.replace(/[{}]+/g, "").split("|");
 
-                    let result = dict[keySeq[0]] || "";
+                let result = dict[keySeq[0]] || "";
 
-                    if (typeof result === "function") {
-                        const userData = keySeq.length ? keySeq.slice(1, keySeq.length) : [];
-                        result = result(JsonForm.Utilities.merge(args, { userData: userData }));
-                    }
+                if (typeof result === "function") {
+                    const templateData = keySeq.length ? keySeq.slice(1, keySeq.length) : [];
+                    result = result(JsonForm.Utilities.merge(args, { templateData: templateData }));
+                }
 
-                    return result;
+                return result;
 
-                }.bind(this));
+            }.bind(this));
 
-            });
 
             // Create a fragment using the cloned template content.
             let fragment = document.importNode(clone.content, true);
@@ -1519,18 +1516,16 @@ namespace JsonForm {
 
         /**
          * [DEPRECATED] Adds an event listener to the form's body element.
-         * This method is a convenient wrapper for binding event listeners to the form's body element.
-         *
+         * 
+         * @deprecated Use on(type, listener, options) instead.
+         * 
          * @param {string} type The type of the event to listen for (e.g., "click", "change").
          * @param {EventListenerOrEventListenerObject} listener The event listener function or object to be called when the event is triggered.
          * @param {boolean | AddEventListenerOptions} [options] An optional parameter specifying options for the event listener.
          * @returns {void}
-         * @deprecated Use on(type, listener, options) instead.
          * @public
          */
         public addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
-            // Call the private _bindEvents method, passing the form's body element as the target element.
-            // This method is responsible for actually binding the event listener to the target element.
             this._bindEvents(this._o.body, type, listener, options);
         }
 
@@ -1544,13 +1539,16 @@ namespace JsonForm {
          * @param {string} type The type of the event to listen for (e.g., "click", "change").
          * @param {EventListenerOrEventListenerObject} listener The event listener function or object to be called when the event is triggered.
          * @param {boolean | AddEventListenerOptions} [options] An optional parameter specifying options for the event listener.
-         * @returns {void}
+         * @returns {IJsonForm} Returns the form instance for chaining.
          * @public
          */
-        public on(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
+        public on(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): IJsonForm {
+
             // Call the private _bindEvents method, passing the form's body element as the target element.
             // This method is responsible for actually binding the event listener to the target element.
             this._bindEvents(this._o.body, type, listener, options);
+
+            return this;
         }
 
 
@@ -1974,7 +1972,7 @@ interface IJsonForm {
      * @param listener The event listener to execute when the event occurs.
      * @param options Optional settings for the event listener.
      */
-    on(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+    on(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): IJsonForm;
 
     /**
      * Dispatches a custom event with optional data.
